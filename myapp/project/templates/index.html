@@ -1,24 +1,15 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Главная страница</title>
-</head>
-<body>
+{% extends 'base.html' %}
+
+{% block title %}Главная страница{% endblock %}
+
+{% block content %}
 
     {% if username %}
         <h1>Добро пожаловать, {{ username }}!</h1>
         <p>Вы успешно зарегистрировались и вошли в систему.</p>
-        <!-- Кнопка выхода -->
-        <form method="post" action="{% url 'logout' %}">
-            {% csrf_token %}
-            <button type="submit">Выйти</button>
-        </form>
     {% else %}
         <h1>Добро пожаловать!</h1>
         <p>Пожалуйста, <a href="{% url 'login' %}">войдите</a> в систему.</p>
     {% endif %}
+{% endblock %}
 
-    <!-- Другой контент страницы -->
-</body>
-</html>
