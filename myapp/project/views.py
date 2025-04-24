@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, authenticate
 from .forms import UserRegistrationForm, UserLoginForm
 
@@ -7,6 +8,12 @@ from .forms import UserRegistrationForm, UserLoginForm
 def index(request):
     username = request.user.username if request.user.is_authenticated else ''
     return render(request, 'index.html', {'username': username})
+
+
+@login_required
+def documents(request):
+    username = request.user.username if request.user.is_authenticated else ''
+    return render(request, 'documents.html', {'username': username})
 
 
 def register(request):
