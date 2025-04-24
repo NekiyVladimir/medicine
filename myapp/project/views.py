@@ -16,6 +16,12 @@ def documents(request):
     return render(request, 'documents.html', {'username': username})
 
 
+@login_required
+def news(request):
+    username = request.user.username if request.user.is_authenticated else ''
+    return render(request, 'news.html', {'username': username})
+
+
 def register(request):
     if request.method == 'POST':
         form = UserRegistrationForm(request.POST)
