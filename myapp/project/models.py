@@ -12,6 +12,10 @@ class Documents(models.Model):
                                    verbose_name='ID пользователя, который обновил')  # Обновлено кем
     version = models.DecimalField(max_digits=3, decimal_places=1, default=1.0, verbose_name='Версия документа')  # Версия
 
+    class Meta:
+        verbose_name = 'Документ'
+        verbose_name_plural = 'Документы'
+
     def save(self, *args, **kwargs):
         if self.pk is not None:
             self.version += 0.1
@@ -19,4 +23,21 @@ class Documents(models.Model):
 
     def __str__(self):
         return self.title
+
+
+class News(models.Model):
+    title = models.CharField(max_length=255, verbose_name='Заголовок')
+    content = models.TextField(verbose_name='Текст новости')
+    file = models.FileField(upload_to='news_files/', blank=True, null=True, verbose_name='Файл')
+    date = models.DateTimeField(auto_now_add=True, verbose_name='Дата новости')
+    author = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Автор')
+
+    class Meta:
+        verbose_name = 'Новость'
+        verbose_name_plural = 'Новости'
+        ordering = ['-date']
+
+    def __str__(self):
+        return self.title
+
 

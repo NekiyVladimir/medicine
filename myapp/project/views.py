@@ -2,7 +2,8 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, authenticate
-from .forms import UserRegistrationForm, UserLoginForm
+from .forms import UserRegistrationForm, UserLoginForm, NewsForm
+from .models import News
 
 
 def index(request):
@@ -19,7 +20,24 @@ def documents(request):
 @login_required
 def news(request):
     username = request.user.username if request.user.is_authenticated else ''
-    return render(request, 'news.html', {'username': username})
+    news_list = News.objects.all()
+    return render(request, 'news.html', {'username': username, 'news': news_list})
+
+
+@login_required
+def create_news(request):
+    username = request.user.username if request.user.is_authenticated else ''
+    if request.method == 'POST':
+        form = NewsForm(request.POST, request.FILES)  # Обработка формы с файлами
+        if form.is_valid():
+            article = form.save(commit=False)
+            article.author = request.user  # Устанавливаем автора
+            article.save()
+            return redirect('news')  # Перенаправление на страницу списка новостей
+    else:
+        form = NewsForm()
+
+    return render(request, 'create-news.html', {'form': form, 'username': username})  # Отправляем форму в шаблон
 
 
 def register(request):
