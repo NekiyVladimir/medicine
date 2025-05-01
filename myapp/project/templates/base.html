@@ -42,7 +42,7 @@
                 </div>
                 {% if username %}
                     <div class="d-flex">
-                        <span class="navbar-text me-2">Пользователь: {{ username }}</span>
+                        <span class="navbar-text me-2"><a href="{% url 'profile' %}">Пользователь: {{ username }}</a></span>
                         <a class="btn btn-primary" href="{% url 'logout' %}">Выйти</a>
                     </div>
                 {% else %}

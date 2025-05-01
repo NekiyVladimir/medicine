@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% block title %}Профиль{% endblock %}
+
+{% block content %}
+
+    {% if group == 'Сотрудник' %}
+    <div class="sidebar">
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link active" aria-current="page" href="#">
+                    Редактировать профиль
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">
+                    Мои документы
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">
+                    Мои задачи
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">
+                    Добавить новость
+                </a>
+            </li>
+        </ul>
+    </div>
+    {% elif group == 'Организация' %}
+        <div class="sidebar">
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="#">
+                        Мои обращения
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        Просмотр документов
+                    </a>
+                </li>
+            </ul>
+        </div>
+    {% elif group == 'Администратор' %}
+        <div class="sidebar">
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" href="#">
+                        Управление пользователями
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">
+                        Аналитические отчеты
+                    </a>
+                </li>
+            </ul>
+        </div>
+    {% endif %}
+
+    <div class="main-content">
+        <h1>Профиль {{ username }}</h1>
+        <h2>Группа {{ group }}</h2>
+
+    </div>
+
+{% endblock %}

@@ -12,6 +12,14 @@ def index(request):
 
 
 @login_required
+def profile(request):
+    username = request.user.username if request.user.is_authenticated else ''
+    groups = request.user.groups.first()  # Получаем все группы пользователя
+    group = groups.name if groups else None
+    return render(request, 'profile.html', {'username': username, 'group': group})
+
+
+@login_required
 def documents(request):
     username = request.user.username if request.user.is_authenticated else ''
     return render(request, 'documents.html', {'username': username})

@@ -8,6 +8,7 @@ urlpatterns = [
     path('documents/', views.documents, name='documents'),
     # path('ckeditor/', include('ckeditor.urls')),
     path('ckeditor/', include('ckeditor_uploader.urls')),
+    path('profile/', views.profile, name='profile'),
     path('news/', views.news, name='news'),
     path('create/', views.create_news, name='create_news'),
     path('login/', views.login_view, name='login'),
