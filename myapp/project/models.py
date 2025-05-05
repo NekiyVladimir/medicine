@@ -41,6 +41,54 @@ class News(models.Model):
         return self.title
 
 
+class Developer(models.Model):
+    name = models.CharField(max_length=100)
+
+    class Meta:
+        verbose_name = 'Разработчик'
+        verbose_name_plural = 'Разработчики'
+        ordering = ['name']
+
+    def __str__(self):
+        return self.name
+
+
+class Tasks(models.Model):
+    PRIORITY_CHOICES = [
+        ('low', 'Низкий'),
+        ('medium', 'Средний'),
+        ('high', 'Высокий'),
+    ]
+
+    URGENCY_CHOICES = [
+        ('low', 'Низкая'),
+        ('medium', 'Средняя'),
+        ('high', 'Высокая'),
+    ]
+    STATUS_CHOICES = [
+        ('in_progress', 'В работе'),
+        ('completed', 'Выполнена'),
+        ('under_review', 'На рассмотрении'),
+    ]
+    title = models.CharField(max_length=255, verbose_name='Название задачи')
+    description = models.TextField(verbose_name='Описание задачи')
+    urgency = models.CharField(max_length=10, verbose_name='Срочность', choices=URGENCY_CHOICES)
+    priority = models.CharField(max_length=10, verbose_name='Приоритет', choices=PRIORITY_CHOICES)
+    customer = models.CharField(max_length=200, verbose_name='заказчик (организация)')
+    assignee = models.ForeignKey(Developer, on_delete=models.CASCADE)
+    file = models.FileField(upload_to='tasks_files/', blank=True, null=True, verbose_name='Файл')
+    deadline = models.DateField(verbose_name='Дедлайн')
+    status = models.CharField(max_length=15, verbose_name='Статус', choices=STATUS_CHOICES, default='under_review')
+
+    class Meta:
+        verbose_name = 'Задача'
+        verbose_name_plural = 'Задачи'
+        ordering = ['-title']
+
+    def __str__(self):
+        return self.title
+
+
 class Document(models.Model):
     title = models.CharField(max_length=200)
 

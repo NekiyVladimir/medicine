@@ -1,9 +1,9 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, authenticate
 from .forms import UserRegistrationForm, UserLoginForm, NewsForm, DocumentForm, BlockForm
-from .models import News, Document, Block
+from .models import News, Document, Block, Tasks
 from django.forms import modelformset_factory
 
 
@@ -30,6 +30,18 @@ def news(request):
     username = request.user.username if request.user.is_authenticated else ''
     news_list = News.objects.all()
     return render(request, 'news.html', {'username': username, 'news': news_list})
+
+
+def news_detail(request, news_id):
+    news_item = get_object_or_404(News, id=news_id)
+    return render(request, 'news_detail.html', {'news_item': news_item})
+
+
+@login_required
+def tasks(request):
+    username = request.user.username if request.user.is_authenticated else ''
+    tasks_list = Tasks.objects.all()
+    return render(request, 'tasks.html', {'username': username, 'tasks': tasks_list})
 
 
 @login_required

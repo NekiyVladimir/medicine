@@ -11,7 +11,9 @@ urlpatterns = [
     path('ckeditor/', include('ckeditor_uploader.urls')),
     path('profile/', views.profile, name='profile'),
     path('news/', views.news, name='news'),
+    path('new/<int:news_id>/', views.news_detail, name='news_detail'),
     path('create/', views.create_news, name='create_news'),
+    path('tasks/', views.tasks, name='tasks'),
     path('login/', views.login_view, name='login'),
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
 ]
