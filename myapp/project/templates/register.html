@@ -1,15 +1,67 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    {% load static %}
+    {% load custom_filters %}
     <meta charset="UTF-8">
     <title>Регистрация</title>
+    <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
 <body>
-    <h2>Регистрация</h2>
-    <form method="post">
+    <!--<h2>Регистрация</h2>
+    <form method="post" >
         {% csrf_token %}
         {{ form.as_p }}
         <button type="submit">Зарегистрироваться</button>
-    </form>
+    </form>-->
+    <div class="container" style="text-align: center;">
+        <h2 class="mt-5">Регистрация</h2>
+        <form method="post" class="mt-4" style="width: 300px; margin: 30px auto">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="id_username">Логин</label>
+                {{ form.username|add_class:"form-control" }}
+                {% if form.username.errors %}
+                    <div class="text-danger">{{ form.username.errors|first }}</div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="id_email">Email</label>
+                {{ form.email|add_class:"form-control" }}
+                {% if form.email.errors %}
+                    <div class="text-danger">{{ form.email.errors|first }}</div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="id_password1">Пароль</label>
+                {{ form.password1|add_class:"form-control" }}
+                {% if form.password1.errors %}
+                    <div class="text-danger">{{ form.password1.errors|first }}</div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="id_password2">Подтверждение пароля</label>
+                {{ form.password2|add_class:"form-control" }}
+                {% if form.password2.errors %}
+                    <div class="text-danger">{{ form.password2.errors|first }}</div>
+                {% endif %}
+            </div>
+
+            <div class="form-group">
+                <label for="id_group">Группа</label>
+                {{ form.group|add_class:"form-control" }}
+                {% if form.group.errors %}
+                    <div class="text-danger">{{ form.group.errors|first }}</div>
+                {% endif %}
+            </div>
+            <br>
+            <button type="submit" class="btn btn-primary">Зарегистрироваться</button>
+        </form>
+        <a href="{% url 'index' %}" type="submit" class="btn btn-primary">Главная</a>
+    </div>
 </body>
 </html>

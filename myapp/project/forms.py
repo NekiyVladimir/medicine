@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User, Group
-from .models import News
+from .models import News, Document, Block
 from ckeditor.fields import RichTextField
 from ckeditor.widgets import CKEditorWidget
 
@@ -34,5 +34,15 @@ class NewsForm(forms.ModelForm):
         }
 
 
+class DocumentForm(forms.ModelForm):
+    class Meta:
+        model = Document
+        fields = ['title']
+
+
+class BlockForm(forms.ModelForm):
+    class Meta:
+        model = Block
+        fields = ['block_type', 'content', 'image', 'order']
 
 

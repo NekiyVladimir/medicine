@@ -41,3 +41,22 @@ class News(models.Model):
         return self.title
 
 
+class Document(models.Model):
+    title = models.CharField(max_length=200)
+
+
+class Block(models.Model):
+    BLOCK_TYPE_CHOICES = [
+        ('text', 'Text'),
+        ('image', 'Image'),
+        ('video', 'Video'),
+    ]
+
+    document = models.ForeignKey(Document, related_name='blocks', on_delete=models.CASCADE)
+    block_type = models.CharField(max_length=10, choices=BLOCK_TYPE_CHOICES)
+    content = models.TextField(blank=True)  # Для текста или ссылки на видео
+    image = models.ImageField(upload_to='images/', blank=True)  # Для изображений
+    order = models.PositiveIntegerField(default=0)  # Для сортировки блоков
+
+    class Meta:
+        ordering = ['order']

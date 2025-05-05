@@ -29,15 +29,24 @@
     <header>
         <nav class="navbar navbar-expand-lg bg-body-tertiary">
             <div class="container-fluid">
-                <a class="navbar-brand" href="#">eDoctorDocs</a>
+                <a class="navbar-brand" href="{% url 'index' %}">eDoctorDocs</a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
                     <div class="navbar-nav">
-                        <a class="nav-link active" aria-current="page" href="{% url 'index' %}">Главная</a>
-                        <a class="nav-link" href="{% url 'documents' %}">Документы</a>
-                        <a class="nav-link" href="{% url 'news' %}">Новости</a>
+                        {% if username %}
+                            <a class="nav-link active" aria-current="page" href="{% url 'index' %}">Главная</a>
+                            <a class="nav-link" href="{% url 'documents' %}">Документы</a>
+                            <a class="nav-link" href="{% url 'news' %}">Новости</a>
+                            <a class="nav-link" href="{% url 'news' %}">Задачи</a>
+                            <a class="nav-link" href="{% url 'news' %}">Обращения</a>
+                            <a class="nav-link" href="{% url 'news' %}">Отчеты</a>
+                            <a class="nav-link" href="{% url 'news' %}">Календарь</a>
+                        {% else %}
+                            <a class="nav-link active" aria-current="page" href="{% url 'index' %}">Главная</a>
+                            <a class="nav-link" href="{% url 'news' %}">Новости</a>
+                        {% endif %}
                     </div>
                 </div>
                 {% if username %}

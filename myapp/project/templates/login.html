@@ -1,16 +1,35 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    {% load static %}
+    {% load custom_filters %}
     <meta charset="UTF-8">
     <title>Авторизация</title>
+    <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
 <body>
-    <h2>Вход</h2>
-    <form method="post">
+    <form method="post" style="width: 300px; text-align: center; margin: 30px auto">
         {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Войти</button>
+        <h1 class="h3 mb-3 fw-normal">Авторизация</h1>
+
+        <div class="form-floating">
+            {{ form.username|add_class:"form-control" }}
+            <label for="floatingInput">Логин</label>
+        </div>
+        <div class="form-floating" style="margin-top: 10px;">
+            {{ form.password|add_class:"form-control" }}
+            <label for="floatingPassword">Пароль</label>
+            {% if form.non_field_errors %}
+                <div class="text-danger">
+                    {{ form.non_field_errors|first }}
+                </div>
+            {% endif %}
+        </div>
+
+        <button class="btn btn-primary py-2" style="margin-top: 10px;" type="submit">Войти</button>
+        <p style="margin-top: 10px; text-align: center">Нет аккаунта? <a href="{% url 'register' %}">Зарегистрироваться</a></p>
+        <p class="mt-5 mb-3 text-body-secondary">© 2017–2025</p>
     </form>
-    <p>Нет аккаунта? <a href="{% url 'register' %}">Зарегистрироваться</a></p> <!-- Замените 'registration' на имя Вашего URL для регистрации -->
 </body>
 </html>

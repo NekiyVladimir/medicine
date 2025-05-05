@@ -1,0 +1,128 @@
+{% extends 'base.html' %}
+
+{% block title %}Добавление новости{% endblock %}
+
+{% block content %}
+<style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            padding: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .block-form {
+            margin-bottom: 15px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+        button {
+            background-color: #5cb85c;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #4cae4c;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+    <script>
+        function toggleBlockFields(selectElement) {
+            const blockDiv = selectElement.closest('.block-form');
+            const textField = blockDiv.querySelector('.text-field');
+            const imageField = blockDiv.querySelector('.image-field');
+            const videoField = blockDiv.querySelector('.video-field');
+
+            // Скрытие всех полей
+            textField.classList.add('hidden');
+            imageField.classList.add('hidden');
+            videoField.classList.add('hidden');
+
+            // Отображение соответствующего поля в зависимости от выбора
+            switch (selectElement.value) {
+                case 'text':
+                    textField.classList.remove('hidden');
+                    break;
+                case 'image':
+                    imageField.classList.remove('hidden');
+                    break;
+                case 'video':
+                    videoField.classList.remove('hidden');
+                    break;
+            }
+        }
+
+        function moveBlock(blockDiv, direction) {
+            const sibling = direction === 'up' ? blockDiv.previousElementSibling : blockDiv.nextElementSibling;
+            if (sibling) {
+                const parent = blockDiv.parentNode;
+                if (direction === 'up') {
+                    parent.insertBefore(blockDiv, sibling);
+                } else {
+                    parent.insertBefore(sibling, blockDiv);
+                }
+            }
+        }
+    </script>
+
+<div class="container">
+    <h1>Создание документа</h1>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ document_form.as_p }}
+
+        {{ block_formset.management_form }}
+        {% for form in block_formset %}
+            <div class="block-form">
+                <h3>Блок {{ forloop.counter }}</h3>
+                {{ form.block_type }}
+                <div class="text-field hidden">
+                    {{ form.content.label }}<br>
+                    {{ form.content }}<br>
+                </div>
+                <div class="image-field hidden">
+                    {{ form.image.label }}<br>
+                    {{ form.image }}<br>
+                </div>
+                <div class="video-field hidden">
+                    {{ form.video.label }}<br>
+                    {{ form.video }}<br>
+                </div>
+                <button type="button" onclick="moveBlock(this.closest('.block-form'), 'up')">↑</button>
+                <button type="button" onclick="moveBlock(this.closest('.block-form'), 'down')">↓</button>
+            </div>
+            <script>
+                // Инициализация состояния полей при загрузке страницы
+                document.addEventListener('DOMContentLoaded', function() {
+                    const selectElement = document.querySelectorAll('select[name$=block_type]');
+                    selectElement.forEach(select => {
+                        toggleBlockFields(select);
+                        select.addEventListener('change', function() {
+                            toggleBlockFields(this);
+                        });
+                    });
+                });
+            </script>
+        {% endfor %}
+
+        <button type="submit">Сохранить</button>
+    </form>
+</div>
+{% endblock %}

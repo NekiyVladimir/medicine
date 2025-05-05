@@ -10,3 +10,12 @@
     margin-left: 275px;
     padding: 20px;
 }
+
+.text-danger {
+    color: red;  /* Цвет текста ошибок */
+    font-size: 0.875em;  /* Размер шрифта для ошибок */
+}
+
+a {
+    text-decoration: none;
+}

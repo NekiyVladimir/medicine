@@ -5,11 +5,73 @@
 {% block content %}
 
     {% if username %}
-        <h1>Добро пожаловать, {{ username }}!</h1>
-        <p>Вы успешно зарегистрировались и вошли в систему.</p>
+        <div class="container px-4 py-5" id="hanging-icons">
+            <h2 class="pb-2 border-bottom" style="text-align: center">Добро пожаловать, {{ username }}!</h2>
+            <div class="row g-4 py-5 row-cols-1 row-cols-lg-3">
+                <div class="col d-flex align-items-start">
+                    <div class="feature-icon d-inline-flex align-items-center justify-content-center text-bg-primary bg-gradient fs-2 mb-3">
+                        <svg class="bi" width="1em" height="1em" aria-hidden="true"><use xlink:href="#collection"></use></svg>
+                    </div>
+                    <div>
+                        <h3 class="fs-2 text-body-emphasis">Ваши документы</h3>
+                        <p>Создавайте, редактируйте и сохраняйте важные документы в одном месте!</p>
+                        <a href="{% url 'documents' %}" class="btn btn-primary">
+                        Перейти
+                        </a>
+                    </div>
+                </div>
+                <div class="col d-flex align-items-start">
+                    <div class="feature-icon d-inline-flex align-items-center justify-content-center text-bg-primary bg-gradient fs-2 mb-3">
+                        <svg class="bi" width="1em" height="1em" aria-hidden="true"><use xlink:href="#collection"></use></svg>
+                    </div>
+                    <div>
+                        <h3 class="fs-2 text-body-emphasis">Настройки профиля</h3>
+                        <p>Изменяйте свои данные, настраивайте внешний вии предпочтения.</p>
+                        <a href="{% url 'profile' %}" class="btn btn-outline-dark">
+                            Открыть
+                        </a>
+                    </div>
+                </div>
+                <div class="col d-flex align-items-start">
+                    <div class="feature-icon d-inline-flex align-items-center justify-content-center text-bg-primary bg-gradient fs-2 mb-3">
+                        <svg class="bi" width="1em" height="1em" aria-hidden="true"><use xlink:href="#collection"></use></svg>
+                    </div>
+                    <div>
+                        <h3 class="fs-2 text-body-emphasis">Новости</h3>
+                        <p>Оставайтесь в курсе последних новостей и обновлений, чтобы оптимизировать работу Вашего
+                            медицинского учреждения и обеспечить лучший уход за пациентами.</p>
+                        <a href="{% url 'news' %}" class="btn btn-primary">
+                            Перейти
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
     {% else %}
-        <h1>Добро пожаловать!</h1>
-        <p>Пожалуйста, <a href="{% url 'login' %}">войдите</a> в систему.</p>
+        <div class="container my-5">
+            <div class="p-5 text-center bg-body-tertiary rounded-3">
+                <h1 class="text-body-emphasis">Добро пожаловать в eDoctorDocs!</h1>
+                <p class="col-lg-8 mx-auto fs-5 text-muted">
+                   Мы рады приветствовать Вас в нашем приложении, созданном специально для медицинских учреждений.
+                    eDoctorDocs — это Ваш надежный помощник в управлении медицинской документацией, который упрощает
+                    взаимодействие между врачами, пациентами и административным персоналом.</p>
+                <p class="col-lg-8 mx-auto fs-5 text-muted">Наша цель — сделать Вашу работу более эффективной и
+                    безопасной. Мы надеемся, что eDoctorDocs станет незаменимым инструментом в Вашем повседневном
+                    рабочем процессе.<br>
+                    Спасибо, что выбрали нас!
+                </p>
+                <div class="d-inline-flex gap-2 mb-5">
+                    <a href="{% url 'login' %}" class="d-inline-flex align-items-center btn btn-primary btn-lg px-4
+                    rounded-pill" type="button">
+                        Войти
+                    </a>
+                    <a href="{% url 'register' %}" class="btn btn-outline-secondary btn-lg px-4 rounded-pill"
+                       type="button">
+                        Зарегистрироваться
+                    </a>
+                </div>
+            </div>
+        </div>
     {% endif %}
 {% endblock %}
 

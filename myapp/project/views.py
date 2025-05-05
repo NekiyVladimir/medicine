@@ -2,8 +2,9 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, authenticate
-from .forms import UserRegistrationForm, UserLoginForm, NewsForm
-from .models import News
+from .forms import UserRegistrationForm, UserLoginForm, NewsForm, DocumentForm, BlockForm
+from .models import News, Document, Block
+from django.forms import modelformset_factory
 
 
 def index(request):
@@ -25,7 +26,6 @@ def documents(request):
     return render(request, 'documents.html', {'username': username})
 
 
-@login_required
 def news(request):
     username = request.user.username if request.user.is_authenticated else ''
     news_list = News.objects.all()
@@ -64,7 +64,7 @@ def register(request):
 
 def login_view(request):
     if request.method == 'POST':
-        form = UserLoginForm(data=request.POST)
+        form = UserLoginForm(request, data=request.POST)
         if form.is_valid():
             user = form.get_user()
             login(request, user)
@@ -72,3 +72,28 @@ def login_view(request):
     else:
         form = UserLoginForm()
     return render(request, 'login.html', {'form': form})
+
+
+def create_document(request):
+    BlockFormSet = modelformset_factory(Block, form=BlockForm, extra=4)
+
+    if request.method == 'POST':
+        document_form = DocumentForm(request.POST)
+        block_formset = BlockFormSet(request.POST, request.FILES, queryset=Block.objects.none())
+
+        if document_form.is_valid() and block_formset.is_valid():
+            document = document_form.save()
+            blocks = block_formset.save(commit=False)
+            for block in blocks:
+                block.document = document
+                block.save()
+            return redirect('success_url')  # Замените на ваш URL
+
+    else:
+        document_form = DocumentForm()
+        block_formset = BlockFormSet(queryset=Block.objects.none())
+
+    return render(request, 'create_document.html', {
+        'document_form': document_form,
+        'block_formset': block_formset,
+    })
