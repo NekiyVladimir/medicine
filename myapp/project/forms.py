@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User, Group
-from .models import News, Document, Block
+from .models import News, Document, Block, Tasks, Tickets
 from ckeditor.fields import RichTextField
 from ckeditor.widgets import CKEditorWidget
 
@@ -30,6 +30,34 @@ class NewsForm(forms.ModelForm):
         labels = {
             'title': 'Заголовок',
             'content': 'Текст новости',
+            'file': 'Файл',
+        }
+
+
+class TasksForm(forms.ModelForm):
+    description = forms.CharField(widget=CKEditorWidget(), label='Текст задачи')
+
+    class Meta:
+        model = Tasks
+        fields = ['title', 'description', 'file', 'urgency', 'priority', 'customer', 'assignee', 'deadline', 'status']
+
+        labels = {
+            'title': 'Заголовок',
+            'description': 'Текст задачи',
+            'file': 'Файл',
+        }
+
+
+class TicketsForm(forms.ModelForm):
+    description = forms.CharField(widget=CKEditorWidget(), label='Текст обращения')
+
+    class Meta:
+        model = Tickets
+        fields = ['title', 'description', 'file', 'customer']
+
+        labels = {
+            'title': 'Тема обращения',
+            'description': 'Текст обращения',
             'file': 'Файл',
         }
 

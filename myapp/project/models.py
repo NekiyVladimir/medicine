@@ -89,6 +89,28 @@ class Tasks(models.Model):
         return self.title
 
 
+class Tickets(models.Model):
+    STATUS_CHOICES = [
+        ('in_progress', 'В работе'),
+        ('new', 'Новое'),
+        ('decided', 'Решено'),
+    ]
+    title = models.CharField(max_length=255, verbose_name='Тема обращения')
+    description = models.TextField(verbose_name='Описание обращения')
+    customer = models.CharField(max_length=200, verbose_name='заказчик (организация)')
+    file = models.FileField(upload_to='tickets_files/', blank=True, null=True, verbose_name='Файл')
+    date = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания обращения')
+    status = models.CharField(max_length=15, verbose_name='Статус', choices=STATUS_CHOICES, default='new')
+
+    class Meta:
+        verbose_name = 'Обращение'
+        verbose_name_plural = 'Обращения'
+        ordering = ['-title']
+
+    def __str__(self):
+        return self.title
+
+
 class Document(models.Model):
     title = models.CharField(max_length=200)
 

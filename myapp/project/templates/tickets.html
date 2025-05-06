@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block title %}Обращения{% endblock %}
+
+{% block content %}
+
+    <h1>Все обращения</h1>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Номер обращения</th>
+                <th>Организация</th>
+                <th>Тема</th>
+                <th>Статус</th>
+                <th>Дата создания</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for ticket in tickets %}
+                <tr>
+                    <td><a href="{% url 'tickets_detail' ticket.id %}">{{ ticket.id }}</a></td>
+                    <td>{{ ticket.customer }}</td>
+                    <td>{{ ticket.title }}</td>
+                    <td>{{ ticket.get_status_display }}</td>
+                    <td>{{ ticket.date }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% if username %}
+        <div class="mt-3">
+            <a href="{% url 'create_tickets' %}" class="btn btn-success">Добавить обращение</a>
+        </div>
+    {% endif %}
+
+{% endblock %}

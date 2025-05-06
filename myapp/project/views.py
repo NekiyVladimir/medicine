@@ -2,8 +2,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, authenticate
-from .forms import UserRegistrationForm, UserLoginForm, NewsForm, DocumentForm, BlockForm
-from .models import News, Document, Block, Tasks
+from .forms import UserRegistrationForm, UserLoginForm, NewsForm, DocumentForm, BlockForm, TasksForm, TicketsForm
+from .models import News, Document, Block, Tasks, Tickets
 from django.forms import modelformset_factory
 
 
@@ -33,8 +33,9 @@ def news(request):
 
 
 def news_detail(request, news_id):
+    username = request.user.username if request.user.is_authenticated else ''
     news_item = get_object_or_404(News, id=news_id)
-    return render(request, 'news_detail.html', {'news_item': news_item})
+    return render(request, 'news_detail.html', {'username': username, 'news_item': news_item})
 
 
 @login_required
@@ -42,6 +43,13 @@ def tasks(request):
     username = request.user.username if request.user.is_authenticated else ''
     tasks_list = Tasks.objects.all()
     return render(request, 'tasks.html', {'username': username, 'tasks': tasks_list})
+
+
+@login_required
+def tasks_detail(request, tasks_id):
+    username = request.user.username if request.user.is_authenticated else ''
+    tasks_item = get_object_or_404(Tasks, id=tasks_id)
+    return render(request, 'tasks_detail.html', {'username': username, 'tasks_item': tasks_item})
 
 
 @login_required
@@ -57,7 +65,52 @@ def create_news(request):
     else:
         form = NewsForm()
 
-    return render(request, 'create-news.html', {'form': form, 'username': username})  # Отправляем форму в шаблон
+    return render(request, 'create-news.html', {'form': form, 'username': username})
+
+
+@login_required
+def create_tasks(request):
+    username = request.user.username if request.user.is_authenticated else ''
+    if request.method == 'POST':
+        form = TasksForm(request.POST, request.FILES)  # Обработка формы с файлами
+        if form.is_valid():
+            article = form.save(commit=False)
+            article.author = request.user  # Устанавливаем автора
+            article.save()
+            return redirect('tasks')  # Перенаправление на страницу списка новостей
+    else:
+        form = TasksForm()
+
+    return render(request, 'create_task.html', {'form': form, 'username': username})
+
+
+@login_required
+def tickets(request):
+    username = request.user.username if request.user.is_authenticated else ''
+    tickets_list = Tickets.objects.all()
+    return render(request, 'tickets.html', {'username': username, 'tickets': tickets_list})
+
+
+@login_required
+def tickets_detail(request, tickets_id):
+    username = request.user.username if request.user.is_authenticated else ''
+    tickets_item = get_object_or_404(Tasks, id=tickets_id)
+    return render(request, 'tickets_detail.html', {'username': username, 'tickets_item': tickets_item})
+
+
+@login_required
+def create_tickets(request):
+    username = request.user.username if request.user.is_authenticated else ''
+    if request.method == 'POST':
+        form = TicketsForm(request.POST, request.FILES)  # Обработка формы с файлами
+        if form.is_valid():
+            article = form.save(commit=False)
+            article.save()
+            return redirect('tickets')  # Перенаправление на страницу списка новостей
+    else:
+        form = TicketsForm()
+
+    return render(request, 'create_tickets.html', {'form': form, 'username': username})
 
 
 def register(request):

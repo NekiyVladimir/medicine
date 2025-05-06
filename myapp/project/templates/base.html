@@ -10,6 +10,11 @@
     <script src="{% static 'ckeditor/ckeditor-init.js' %}"></script>
     <script src="{% static 'ckeditor/ckeditor/ckeditor.js' %}"></script>
     <link rel="stylesheet" href="{% static 'ckeditor/ckeditor.css' %}">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
     <style>
         body {
             margin: 0;
@@ -40,8 +45,9 @@
                             <a class="nav-link" href="{% url 'documents' %}">Документы</a>
                             <a class="nav-link" href="{% url 'news' %}">Новости</a>
                             <a class="nav-link" href="{% url 'tasks' %}">Задачи</a>
-                            <a class="nav-link" href="{% url 'news' %}">Обращения</a>
+                            <a class="nav-link" href="{% url 'tickets' %}">Обращения</a>
                             <a class="nav-link" href="{% url 'news' %}">Отчеты</a>
+                            <a class="nav-link" href="{% url 'news' %}">Внутренние документы</a>
                             <a class="nav-link" href="{% url 'news' %}">Календарь</a>
                         {% else %}
                             <a class="nav-link active" aria-current="page" href="{% url 'index' %}">Главная</a>

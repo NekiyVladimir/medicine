@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Documents, News, Tasks, Developer
+from .models import Documents, News, Tasks, Developer, Tickets
 
 
 class DocumentsAdmin(admin.ModelAdmin):
@@ -17,6 +17,11 @@ class TasksAdmin(admin.ModelAdmin):
     search_fields = ('title',)
 
 
+class TicketsAdmin(admin.ModelAdmin):
+    list_display = ('id', 'title', 'customer', 'date', 'status')
+    search_fields = ('title',)
+
+
 class DeveloperAdmin(admin.ModelAdmin):
     list_display = ('name',)
     search_fields = ('name',)
@@ -25,4 +30,5 @@ class DeveloperAdmin(admin.ModelAdmin):
 admin.site.register(Documents, DocumentsAdmin)
 admin.site.register(News, NewsAdmin)
 admin.site.register(Tasks, TasksAdmin)
+admin.site.register(Tickets, TicketsAdmin)
 admin.site.register(Developer, DeveloperAdmin)

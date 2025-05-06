@@ -17,7 +17,7 @@
         <tbody>
             {% for task in tasks %}
                 <tr>
-                    <td><a href="{% url 'news_detail' task.id %}">{{ task.title }}</a></td>
+                    <td><a href="{% url 'tasks_detail' task.id %}">{{ task.title }}</a></td>
                     <td>{{ task.get_priority_display }}</td>
                     <td>{{ task.deadline }}</td>
                     <td>{{ task.get_status_display }}</td>
@@ -27,7 +27,7 @@
     </table>
     {% if username %}
         <div class="mt-3">
-            <a href="#" class="btn btn-success">Добавить задачу</a>
+            <a href="{% url 'create_tasks' %}" class="btn btn-success">Добавить задачу</a>
         </div>
     {% endif %}
 
