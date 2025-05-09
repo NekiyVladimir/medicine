@@ -122,7 +122,8 @@
             </script>
         {% endfor %}
 
-        <button type="submit">Сохранить</button>
+        <button class="btn btn-primary" type="submit">Сохранить</button>
+        <a href="{% url 'documents' %}" class="btn btn-success">Вернуться</a>
     </form>
 </div>
 {% endblock %}

@@ -28,8 +28,23 @@
         </div>
 
         <button class="btn btn-primary py-2" style="margin-top: 10px;" type="submit">Войти</button>
+        <a href="{% url 'social:begin' 'google-oauth2' %}"><img src="{% static 'img/icons8-google-48.png' %}"
+            style="margin-top: 10px;" title="Авторизоваться через Google" alt="Google Icon"></a>
         <p style="margin-top: 10px; text-align: center">Нет аккаунта? <a href="{% url 'register' %}">Зарегистрироваться</a></p>
         <p class="mt-5 mb-3 text-body-secondary">© 2017–2025</p>
     </form>
+
+    <!--<div class="g_id_signin" data-type="standard" data-shape="rectangular" data-theme="outline" data-text="sign_in_with" data-size="large" data-logo_alignment="left"></div>
+
+    <script>
+        function onSignIn(googleUser ) {
+            // Здесь вы можете обработать успешный вход
+            var profile = googleUser .getBasicProfile();
+            console.log('ID: ' + profile.getId()); // Не отправляйте этот ID на ваш сервер!
+            console.log('Name: ' + profile.getName());
+            console.log('Image URL: ' + profile.getImageUrl());
+            console.log('Email: ' + profile.getEmail());
+        }
+    </script>-->
 </body>
 </html>

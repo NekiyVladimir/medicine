@@ -38,9 +38,19 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    'django.contrib.sites',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.google',
+
+    'social_django',
+
     'ckeditor',
     'project',
 ]
+
+SITE_ID = 1
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -50,6 +60,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'allauth.account.middleware.AccountMiddleware',
 ]
 
 ROOT_URLCONF = 'myapp.urls'
@@ -107,6 +118,13 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',  # Это стандартный бэкенд
+    'allauth.account.auth_backends.AuthenticationBackend',  # Бэкенд для allauth
+    'social_core.backends.google.GoogleOAuth2',
+]
+
+
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
@@ -128,7 +146,8 @@ STATICFILES_DIRS = [
  os.path.join(BASE_DIR, 'static'),
 ]
 # STATIC_ROOT = os.path.join(BASE_DIR, 'static')
-
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
@@ -139,6 +158,8 @@ LOGIN_URL = 'index'
 LOGIN_REDIRECT_URL = 'index'
 LOGOUT_REDIRECT_URL = 'login'
 
+SOCIAL_AUTH_GOOGLE_OAUTH2_REDIRECT_URI = 'index'
+ACCOUNT_LOGOUT_REDIRECT_URL = 'index'  # URL, на который будет перенаправлен пользователь после выхода
 
 CKEDITOR_UPLOAD_PATH = "uploads/"
 CKEDITOR_CONFIGS = {

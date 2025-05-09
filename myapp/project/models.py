@@ -2,6 +2,31 @@ from django.db import models
 from django.contrib.auth.models import User
 
 
+class EmployeePosition(models.Model):
+    title = models.CharField(max_length=100)
+
+    class Meta:
+        verbose_name = 'Должность'
+        verbose_name_plural = 'Должности'
+
+    def __str__(self):
+        return self.title
+
+
+class Employee(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    position = models.ForeignKey(EmployeePosition, on_delete=models.CASCADE, verbose_name='Должность')
+    phone = models.CharField(max_length=15, verbose_name='Телефон')
+    avatar = models.ImageField(upload_to='avatars/', blank=True, null=True)
+
+    class Meta:
+        verbose_name = 'Сотрудник'
+        verbose_name_plural = 'Сотрудники'
+
+    def __str__(self):
+        return f"{self.user.first_name} {self.user.last_name}"
+
+
 class Documents(models.Model):
     title = models.CharField(max_length=255, verbose_name='Название документа')  # Заголовок
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания')  # Дата создания
@@ -28,7 +53,7 @@ class Documents(models.Model):
 class News(models.Model):
     title = models.CharField(max_length=255, verbose_name='Заголовок')
     content = models.TextField(verbose_name='Текст новости')
-    file = models.FileField(upload_to='news_files/', blank=True, null=True, verbose_name='Файл')
+    image = models.ImageField(upload_to='news_files/', blank=True, null=True, verbose_name='Изображение')
     date = models.DateTimeField(auto_now_add=True, verbose_name='Дата новости')
     author = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Автор')
 
@@ -75,7 +100,7 @@ class Tasks(models.Model):
     urgency = models.CharField(max_length=10, verbose_name='Срочность', choices=URGENCY_CHOICES)
     priority = models.CharField(max_length=10, verbose_name='Приоритет', choices=PRIORITY_CHOICES)
     customer = models.CharField(max_length=200, verbose_name='заказчик (организация)')
-    assignee = models.ForeignKey(Developer, on_delete=models.CASCADE)
+    assignee = models.ForeignKey(Developer, on_delete=models.CASCADE, verbose_name='исполнитель')
     file = models.FileField(upload_to='tasks_files/', blank=True, null=True, verbose_name='Файл')
     deadline = models.DateField(verbose_name='Дедлайн')
     status = models.CharField(max_length=15, verbose_name='Статус', choices=STATUS_CHOICES, default='under_review')

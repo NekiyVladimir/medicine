@@ -1,5 +1,14 @@
 from django.contrib import admin
-from .models import Documents, News, Tasks, Developer, Tickets
+from .models import Documents, News, Tasks, Developer, Tickets, EmployeePosition, Employee
+
+
+class EmployeePositionAdmin(admin.ModelAdmin):
+    list_display = ('title',)
+    search_fields = ('title',)
+
+
+class EmployeeAdmin(admin.ModelAdmin):
+    list_display = ('user_username',)
 
 
 class DocumentsAdmin(admin.ModelAdmin):
@@ -27,6 +36,8 @@ class DeveloperAdmin(admin.ModelAdmin):
     search_fields = ('name',)
 
 
+admin.site.register(Employee, EmployeeAdmin)
+admin.site.register(EmployeePosition, EmployeePositionAdmin)
 admin.site.register(Documents, DocumentsAdmin)
 admin.site.register(News, NewsAdmin)
 admin.site.register(Tasks, TasksAdmin)

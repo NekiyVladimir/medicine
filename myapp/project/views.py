@@ -139,8 +139,10 @@ def login_view(request):
     return render(request, 'login.html', {'form': form})
 
 
+@login_required
 def create_document(request):
     BlockFormSet = modelformset_factory(Block, form=BlockForm, extra=4)
+    username = request.user.username if request.user.is_authenticated else ''
 
     if request.method == 'POST':
         document_form = DocumentForm(request.POST)
@@ -152,13 +154,11 @@ def create_document(request):
             for block in blocks:
                 block.document = document
                 block.save()
-            return redirect('success_url')  # Замените на ваш URL
+            return redirect('documents')  # Замените на ваш URL
 
     else:
         document_form = DocumentForm()
         block_formset = BlockFormSet(queryset=Block.objects.none())
 
-    return render(request, 'create_document.html', {
-        'document_form': document_form,
-        'block_formset': block_formset,
-    })
+    return render(request, 'create_document.html', {'document_form': document_form,
+        'block_formset': block_formset, 'username': username})

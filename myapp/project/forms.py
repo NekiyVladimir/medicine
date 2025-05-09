@@ -25,7 +25,7 @@ class NewsForm(forms.ModelForm):
 
     class Meta:
         model = News
-        fields = ['title', 'content', 'file']
+        fields = ['title', 'content', 'image']
 
         labels = {
             'title': 'Заголовок',
