@@ -2,8 +2,10 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, authenticate
-from .forms import UserRegistrationForm, UserLoginForm, NewsForm, DocumentForm, BlockForm, TasksForm, TicketsForm
+from .forms import UserRegistrationForm, UserLoginForm, NewsForm, DocumentForm, BlockForm, TasksForm, TicketsForm, \
+    EmployeeRegistrationForm
 from .models import News, Document, Block, Tasks, Tickets
+from django.contrib import messages
 from django.forms import modelformset_factory
 
 
@@ -121,10 +123,23 @@ def register(request):
             group = form.cleaned_data['group']
             group.user_set.add(user)  # Добавляем пользователя в выбранную группу
             login(request, user)  # Автоматически аутентифицируем пользователя после регистрации
-            return redirect('index')  # Измените на ваш URL
+            return redirect('index')
     else:
         form = UserRegistrationForm()
     return render(request, 'register.html', {'form': form})
+
+
+def employee_register(request):
+    if request.method == 'POST':
+        form = EmployeeRegistrationForm(request.POST, request.FILES)
+        if form.is_valid():
+            user = form.save()
+            login(request, user, backend='django.contrib.auth.backends.ModelBackend')
+            messages.success(request, 'Вы успешно зарегистрированы!')
+            return redirect('index')
+    else:
+        form = EmployeeRegistrationForm()
+    return render(request, 'employee_register.html', {'form': form})
 
 
 def login_view(request):
@@ -133,7 +148,7 @@ def login_view(request):
         if form.is_valid():
             user = form.get_user()
             login(request, user)
-            return redirect('index')  # Измените на ваш URL
+            return redirect('index')
     else:
         form = UserLoginForm()
     return render(request, 'login.html', {'form': form})
@@ -154,7 +169,7 @@ def create_document(request):
             for block in blocks:
                 block.document = document
                 block.save()
-            return redirect('documents')  # Замените на ваш URL
+            return redirect('documents')
 
     else:
         document_form = DocumentForm()

@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User, Group
-from .models import News, Document, Block, Tasks, Tickets
+from .models import News, Document, Block, Tasks, Tickets, Employee, EmployeePosition
 from ckeditor.fields import RichTextField
 from ckeditor.widgets import CKEditorWidget
 
@@ -13,6 +13,38 @@ class UserRegistrationForm(UserCreationForm):
     class Meta:
         model = User
         fields = ['username', 'email', 'password1', 'password2', 'group']
+
+
+class EmployeeRegistrationForm(forms.ModelForm):
+    username = forms.CharField(max_length=30, required=True, label='Имя')
+    last_name = forms.CharField(max_length=30, required=True, label='Фамилия')
+    email = forms.EmailField(required=True, label='Электронная почта')
+    phone = forms.CharField(max_length=15, required=False, label='Телефон')
+    position = forms.ModelChoiceField(queryset=EmployeePosition.objects.all(), required=True, label='Должность')
+    avatar = forms.ImageField(required=False, label='Аватарка')
+
+    class Meta:
+        model = User
+        fields = ['username', 'last_name', 'email', 'password']
+
+    def save(self, commit=True):
+        user = super().save(commit=False)
+        user.set_password(self.cleaned_data['password'])
+        if commit:
+            user.save()
+            # Добавление пользователя в группу "Сотрудник"
+            employee_group, created = Group.objects.get_or_create(name='Сотрудник')
+            user.groups.add(employee_group)
+
+            # Создание экземпляра Employee
+            employee = Employee(
+                user=user,
+                phone=self.cleaned_data['phone'],
+                position=self.cleaned_data['position'],
+                avatar=self.cleaned_data['avatar']
+            )
+            employee.save()
+        return user
 
 
 class UserLoginForm(AuthenticationForm):

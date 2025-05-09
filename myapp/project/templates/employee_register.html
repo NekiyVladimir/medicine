@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% load static %}
+    {% load custom_filters %}
+    <meta charset="UTF-8">
+    <title>Регистрация сотрудника</title>
+    <link rel="stylesheet" href="{% static 'bootstrap/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+    <div class="container" style="text-align: center;">
+        <h2 class="mt-5">Регистрация сотрудника</h2>
+        <form method="POST" enctype="multipart/form-data" style="width: 300px; margin: 30px auto">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="id_username">Имя</label>
+                {{ form.username|add_class:"form-control" }}
+                {% if form.username.errors %}
+                    <div class="text-danger">{{ form.username.errors|first }}</div>
+                {% endif %}
+            </div>
+            <div class="form-group">
+                <label for="id_last_name">Фамилия</label>
+                {{ form.last_name|add_class:"form-control" }}
+                {% if form.last_name.errors %}
+                    <div class="text-danger">{{ form.last_name.errors|first }}</div>
+                {% endif %}
+            </div>
+            <div class="form-group">
+                <label for="id_password">Пароль</label>
+                {{ form.password|add_class:"form-control" }}
+                {% if form.password.errors %}
+                    <div class="text-danger">{{ form.password.errors|first }}</div>
+                {% endif %}
+            </div>
+            <div class="form-group">
+                <label for="id_email">Почта</label>
+                {{ form.email|add_class:"form-control" }}
+                {% if form.email.errors %}
+                    <div class="text-danger">{{ form.email.errors|first }}</div>
+                {% endif %}
+            </div>
+            <div class="form-group">
+                <label for="id_phone">Телефон</label>
+                {{ form.phone|add_class:"form-control" }}
+                {% if form.phone.errors %}
+                    <div class="text-danger">{{ form.phone.errors|first }}</div>
+                {% endif %}
+            </div>
+            <div class="form-group">
+                <label for="id_position">Должность</label>
+                {{ form.position|add_class:"form-control" }}
+                {% if form.position.errors %}
+                    <div class="text-danger">{{ form.position.errors|first }}</div>
+                {% endif %}
+            </div>
+            <div class="form-group">
+                <label for="id_avatar">Аватарка</label>
+                {{ form.avatar|add_class:"form-control" }}
+                {% if form.avatar.errors %}
+                    <div class="text-danger">{{ form.avatar.errors|first }}</div>
+                {% endif %}
+            </div>
+            <div style="margin-top: 20px;">
+                <button class="btn btn-outline-success me-2" type="submit">Зарегистрироваться</button>
+            </div>
+        </form>
+        <a href="{% url 'index' %}" type="submit" class="btn btn-primary">Главная</a>
+    </div>
+</body>
+</html>

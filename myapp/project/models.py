@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 
 
 class EmployeePosition(models.Model):
-    title = models.CharField(max_length=100)
+    title = models.CharField(max_length=100, verbose_name='Должность', unique=True)
 
     class Meta:
         verbose_name = 'Должность'
@@ -14,10 +14,10 @@ class EmployeePosition(models.Model):
 
 
 class Employee(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    position = models.ForeignKey(EmployeePosition, on_delete=models.CASCADE, verbose_name='Должность')
-    phone = models.CharField(max_length=15, verbose_name='Телефон')
-    avatar = models.ImageField(upload_to='avatars/', blank=True, null=True)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, verbose_name='пользователь')
+    position = models.ForeignKey('EmployeePosition', verbose_name='Должность', on_delete=models.SET_NULL, null=True)
+    phone = models.CharField(max_length=15, verbose_name='телефон', blank=True, null=True)
+    avatar = models.ImageField(upload_to='avatars/', verbose_name='аватарка', blank=True, null=True)
 
     class Meta:
         verbose_name = 'Сотрудник'

@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.contrib.auth.models import User, Group
 from .models import Documents, News, Tasks, Developer, Tickets, EmployeePosition, Employee
 
 
@@ -8,7 +9,7 @@ class EmployeePositionAdmin(admin.ModelAdmin):
 
 
 class EmployeeAdmin(admin.ModelAdmin):
-    list_display = ('user_username',)
+    list_display = ('user', 'position', 'phone', 'avatar')
 
 
 class DocumentsAdmin(admin.ModelAdmin):
