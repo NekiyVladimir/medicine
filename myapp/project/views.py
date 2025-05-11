@@ -3,7 +3,7 @@ from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, authenticate
 from .forms import UserRegistrationForm, UserLoginForm, NewsForm, DocumentForm, BlockForm, TasksForm, TicketsForm, \
-    EmployeeRegistrationForm
+    EmployeeRegistrationForm, OrganizationRegistrationForm
 from .models import News, Document, Block, Tasks, Tickets
 from django.contrib import messages
 from django.forms import modelformset_factory
@@ -140,6 +140,19 @@ def employee_register(request):
     else:
         form = EmployeeRegistrationForm()
     return render(request, 'employee_register.html', {'form': form})
+
+
+def organization_register(request):
+    if request.method == 'POST':
+        form = OrganizationRegistrationForm(request.POST, request.FILES)
+        if form.is_valid():
+            user = form.save()
+            login(request, user, backend='django.contrib.auth.backends.ModelBackend')
+            messages.success(request, 'Вы успешно зарегистрированы!')
+            return redirect('index')
+    else:
+        form = OrganizationRegistrationForm()
+    return render(request, 'organization_register.html', {'form': form})
 
 
 def login_view(request):

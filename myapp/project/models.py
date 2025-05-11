@@ -24,7 +24,21 @@ class Employee(models.Model):
         verbose_name_plural = 'Сотрудники'
 
     def __str__(self):
-        return f"{self.user.first_name} {self.user.last_name}"
+        return self.user.username
+
+
+class Organization(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, verbose_name='пользователь')
+    name = models.CharField(max_length=100, verbose_name='Название организации')
+    address = models.CharField(max_length=200, verbose_name='Адрес', blank=True, null=True)
+    phone = models.CharField(max_length=15, verbose_name='телефон', blank=True, null=True)
+
+    class Meta:
+        verbose_name = 'Организация'
+        verbose_name_plural = 'Организации'
+
+    def __str__(self):
+        return self.name
 
 
 class Documents(models.Model):

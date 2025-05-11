@@ -161,7 +161,6 @@ LOGOUT_REDIRECT_URL = 'login'
 SOCIAL_AUTH_GOOGLE_OAUTH2_REDIRECT_URI = 'index'
 ACCOUNT_LOGOUT_REDIRECT_URL = 'index'  # URL, на который будет перенаправлен пользователь после выхода
 
-
 CKEDITOR_UPLOAD_PATH = "uploads/"
 CKEDITOR_CONFIGS = {
     'default': {

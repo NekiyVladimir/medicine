@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.models import User, Group
-from .models import Documents, News, Tasks, Developer, Tickets, EmployeePosition, Employee
+from .models import Documents, News, Tasks, Developer, Tickets, EmployeePosition, Employee, Organization
 
 
 class EmployeePositionAdmin(admin.ModelAdmin):
@@ -10,6 +10,10 @@ class EmployeePositionAdmin(admin.ModelAdmin):
 
 class EmployeeAdmin(admin.ModelAdmin):
     list_display = ('user', 'position', 'phone', 'avatar')
+
+
+class OrganizationAdmin(admin.ModelAdmin):
+    list_display = ('user', 'name', 'phone', 'address')
 
 
 class DocumentsAdmin(admin.ModelAdmin):
@@ -39,6 +43,7 @@ class DeveloperAdmin(admin.ModelAdmin):
 
 admin.site.register(Employee, EmployeeAdmin)
 admin.site.register(EmployeePosition, EmployeePositionAdmin)
+admin.site.register(Organization, OrganizationAdmin)
 admin.site.register(Documents, DocumentsAdmin)
 admin.site.register(News, NewsAdmin)
 admin.site.register(Tasks, TasksAdmin)

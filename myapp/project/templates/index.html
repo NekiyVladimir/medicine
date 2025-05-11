@@ -64,9 +64,13 @@
                     rounded-pill" type="button">
                         Войти
                     </a>
-                    <a href="{% url 'register' %}" class="btn btn-outline-secondary btn-lg px-4 rounded-pill"
+                    <a href="{% url 'employee_register' %}" class="btn btn-outline-secondary btn-lg px-4 rounded-pill"
                        type="button">
-                        Зарегистрироваться
+                        Зарегистрироваться как сотрудник
+                    </a>
+                    <a href="{% url 'organization_register' %}" class="btn btn-outline-secondary btn-lg px-4 rounded-pill"
+                       type="button">
+                        Зарегистрироваться как организация
                     </a>
                 </div>
             </div>
