@@ -15,11 +15,22 @@
 
         <div class="form-floating">
             {{ form.username|add_class:"form-control" }}
-            <label for="floatingInput">Логин</label>
+            <label for="id_username">Логин</label>
+            {% if form.username.errors %}
+                <div class="text-danger">
+                    {{ form.username.errors|first }}
+                </div>
+            {% endif %}
         </div>
+
         <div class="form-floating" style="margin-top: 10px;">
             {{ form.password|add_class:"form-control" }}
-            <label for="floatingPassword">Пароль</label>
+            <label for="id_password">Пароль</label>
+            {% if form.password.errors %}
+                <div class="text-danger">
+                    {{ form.password.errors|first }}
+                </div>
+            {% endif %}
             {% if form.non_field_errors %}
                 <div class="text-danger">
                     {{ form.non_field_errors|first }}

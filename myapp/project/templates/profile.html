@@ -8,7 +8,7 @@
     <div class="sidebar">
         <ul class="nav flex-column">
             <li class="nav-item">
-                <a class="nav-link active" aria-current="page" href="#">
+                <a class="nav-link active" aria-current="page" href="{% url 'edit_profile' %}">
                     Редактировать профиль
                 </a>
             </li>
@@ -18,7 +18,7 @@
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="#">
+                <a class="nav-link" href="{% url 'my_tasks' %}">
                     Мои задачи
                 </a>
             </li>
@@ -33,7 +33,7 @@
         <div class="sidebar">
             <ul class="nav flex-column">
                 <li class="nav-item">
-                    <a class="nav-link active" aria-current="page" href="#">
+                    <a class="nav-link active" aria-current="page" href="{% url 'my_tickets' %}">
                         Мои обращения
                     </a>
                 </li>
@@ -62,7 +62,7 @@
     {% endif %}
 
     <div class="main-content">
-        <h1>Профиль {{ username }}</h1>
+        <h1>Профиль {{ user.first_name }}</h1>
         <h2>Группа {{ group }}</h2>
 
     </div>

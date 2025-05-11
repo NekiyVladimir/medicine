@@ -1,6 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User, Group
+from django.contrib.auth import authenticate
 from .models import News, Document, Block, Tasks, Tickets, Employee, EmployeePosition, Organization
 from ckeditor.fields import RichTextField
 from ckeditor.widgets import CKEditorWidget
@@ -16,7 +17,8 @@ class UserRegistrationForm(UserCreationForm):
 
 
 class EmployeeRegistrationForm(forms.ModelForm):
-    username = forms.CharField(max_length=30, required=True, label='Имя')
+    username = forms.CharField(max_length=30, required=True, label='Логин для авторизации')
+    first_name = forms.CharField(max_length=30, required=True, label='Имя и Отчество')
     last_name = forms.CharField(max_length=30, required=True, label='Фамилия')
     email = forms.EmailField(required=True, label='Электронная почта')
     phone = forms.CharField(max_length=15, required=False, label='Телефон')
@@ -25,7 +27,7 @@ class EmployeeRegistrationForm(forms.ModelForm):
 
     class Meta:
         model = User
-        fields = ['username', 'last_name', 'email', 'password']
+        fields = ['username', 'first_name', 'last_name', 'email', 'password']
 
     def save(self, commit=True):
         user = super().save(commit=False)
@@ -47,8 +49,51 @@ class EmployeeRegistrationForm(forms.ModelForm):
         return user
 
 
+class EmployeeProfileForm(forms.ModelForm):
+    username = forms.CharField(max_length=150, label='Логин для авторизации')
+    first_name = forms.CharField(max_length=150, label='Имя отчество')
+    last_name = forms.CharField(max_length=150, label='Фамилия')
+    email = forms.EmailField(label='Электронная почта')
+    password = forms.CharField(widget=forms.PasswordInput(), required=False,
+                               label='Пароль (оставьте пустым, если не хотите менять)')
+
+    class Meta:
+        model = Employee
+        fields = ['username', 'first_name', 'last_name', 'email', 'password', 'position', 'phone', 'avatar']
+        widgets = {
+            'position': forms.Select(attrs={'class': 'form-control'}),
+            'phone': forms.TextInput(attrs={'class': 'form-control'}),
+            'avatar': forms.ClearableFileInput(attrs={'class': 'form-control-file'}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user')
+        super().__init__(*args, **kwargs)
+        self.fields['username'].initial = user.username
+        self.fields['first_name'].initial = user.first_name
+        self.fields['last_name'].initial = user.last_name
+        self.fields['email'].initial = user.email
+
+    def save(self, commit=True):
+        employee = super().save(commit=False)
+        user = employee.user
+        user.username = self.cleaned_data['username']
+        user.first_name = self.cleaned_data['first_name']
+        user.last_name = self.cleaned_data['last_name']
+        user.email = self.cleaned_data['email']
+
+        if self.cleaned_data['password']:
+            user.set_password(self.cleaned_data['password'])
+
+        if commit:
+            user.save()
+            employee.save()
+        return employee
+
+
 class OrganizationRegistrationForm(forms.ModelForm):
-    username = forms.CharField(max_length=30, required=True, label='Имя')
+    username = forms.CharField(max_length=30, required=True, label='Логин для авторизации')
+    first_name = forms.CharField(max_length=30, required=True, label='Имя и Отчество')
     last_name = forms.CharField(max_length=30, required=True, label='Фамилия')
     name = forms.CharField(max_length=100, required=True, label='Название организации')
     email = forms.EmailField(required=True, label='Электронная почта')
@@ -57,7 +102,7 @@ class OrganizationRegistrationForm(forms.ModelForm):
 
     class Meta:
         model = User
-        fields = ['username', 'last_name', 'email', 'password']
+        fields = ['username', 'first_name', 'last_name', 'email', 'password']
 
     def save(self, commit=True):
         user = super().save(commit=False)
@@ -117,7 +162,7 @@ class TicketsForm(forms.ModelForm):
 
     class Meta:
         model = Tickets
-        fields = ['title', 'description', 'file', 'customer']
+        fields = ['title', 'description', 'file']
 
         labels = {
             'title': 'Тема обращения',

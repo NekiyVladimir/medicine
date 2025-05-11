@@ -1,10 +1,12 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views import View
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, authenticate
 from .forms import UserRegistrationForm, UserLoginForm, NewsForm, DocumentForm, BlockForm, TasksForm, TicketsForm, \
-    EmployeeRegistrationForm, OrganizationRegistrationForm
-from .models import News, Document, Block, Tasks, Tickets
+    EmployeeRegistrationForm, OrganizationRegistrationForm, EmployeeProfileForm
+from .models import News, Document, Block, Tasks, Tickets, Employee, Organization
 from django.contrib import messages
 from django.forms import modelformset_factory
 
@@ -16,7 +18,7 @@ def index(request):
 
 @login_required
 def profile(request):
-    username = request.user.username if request.user.is_authenticated else ''
+    username = request.user.first_name if request.user.is_authenticated else ''
     groups = request.user.groups.first()  # Получаем все группы пользователя
     group = groups.name if groups else None
     return render(request, 'profile.html', {'username': username, 'group': group})
@@ -44,6 +46,13 @@ def news_detail(request, news_id):
 def tasks(request):
     username = request.user.username if request.user.is_authenticated else ''
     tasks_list = Tasks.objects.all()
+    return render(request, 'tasks.html', {'username': username, 'tasks': tasks_list})
+
+
+@login_required
+def my_tasks(request):
+    username = request.user.username if request.user.is_authenticated else ''
+    tasks_list = Tasks.objects.filter(author=request.user)
     return render(request, 'tasks.html', {'username': username, 'tasks': tasks_list})
 
 
@@ -101,14 +110,24 @@ def tickets_detail(request, tickets_id):
 
 
 @login_required
+def my_tickets(request):
+    username = request.user.username if request.user.is_authenticated else ''
+    tickets_list = Tickets.objects.filter(author=request.user)
+    return render(request, 'my_tickets.html', {'username': username, 'tasks': tickets_list})
+
+
+@login_required
 def create_tickets(request):
     username = request.user.username if request.user.is_authenticated else ''
     if request.method == 'POST':
-        form = TicketsForm(request.POST, request.FILES)  # Обработка формы с файлами
+        form = TicketsForm(request.POST, request.FILES)
         if form.is_valid():
             article = form.save(commit=False)
+            organization = Organization.objects.get(user=request.user)
+            article.customer = organization
+            article.author = request.user
             article.save()
-            return redirect('tickets')  # Перенаправление на страницу списка новостей
+            return redirect('tickets')
     else:
         form = TicketsForm()
 
@@ -140,6 +159,21 @@ def employee_register(request):
     else:
         form = EmployeeRegistrationForm()
     return render(request, 'employee_register.html', {'form': form})
+
+
+class EditProfileView(LoginRequiredMixin, View):
+    def get(self, request):
+        employee = Employee.objects.get(user=request.user)
+        form = EmployeeProfileForm(instance=employee, user=request.user)
+        return render(request, 'edit_profile.html', {'form': form})
+
+    def post(self, request):
+        employee = Employee.objects.get(user=request.user)
+        form = EmployeeProfileForm(request.POST, request.FILES, instance=employee, user=request.user)
+        if form.is_valid():
+            form.save()
+            return redirect('profile')
+        return render(request, 'edit_profile.html', {'form': form})
 
 
 def organization_register(request):

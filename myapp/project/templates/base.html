@@ -42,7 +42,7 @@
                 </button>
                 <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
                     <div class="navbar-nav">
-                        {% if username %}
+                        {% if user.is_authenticated %}
                             <a class="nav-link active" aria-current="page" href="{% url 'index' %}">Главная</a>
                             <a class="nav-link" href="{% url 'documents' %}">Документы</a>
                             <a class="nav-link" href="{% url 'news' %}">Новости</a>
@@ -57,9 +57,9 @@
                         {% endif %}
                     </div>
                 </div>
-                {% if username %}
+                {% if user.is_authenticated %}
                     <div class="d-flex">
-                        <span class="navbar-text me-2"><a href="{% url 'profile' %}">Пользователь: {{ username }}</a></span>
+                        <span class="navbar-text me-2"><a href="{% url 'profile' %}">Пользователь: {{ user.first_name }}</a></span>
                         <a class="btn btn-primary" href="{% url 'logout' %}">Выйти</a>
                     </div>
                 {% else %}

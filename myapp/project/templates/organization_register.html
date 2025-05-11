@@ -14,6 +14,13 @@
         <form method="POST" enctype="multipart/form-data" style="width: 300px; margin: 30px auto">
             {% csrf_token %}
             <div class="form-group">
+                <label for="id_username">Логин для авторизации</label>
+                {{ form.username|add_class:"form-control" }}
+                {% if form.username.errors %}
+                    <div class="text-danger">{{ form.username.errors|first }}</div>
+                {% endif %}
+            </div>
+            <div class="form-group">
                 <label for="id_name">Название организации</label>
                 {{ form.name|add_class:"form-control" }}
                 {% if form.name.errors %}
@@ -21,10 +28,10 @@
                 {% endif %}
             </div>
             <div class="form-group">
-                <label for="id_username">Имя для связи</label>
-                {{ form.username|add_class:"form-control" }}
-                {% if form.username.errors %}
-                    <div class="text-danger">{{ form.username.errors|first }}</div>
+                <label for="id_first_name">Имя и Отчество для связи</label>
+                {{ form.first_name|add_class:"form-control" }}
+                {% if form.first_name.errors %}
+                    <div class="text-danger">{{ form.first_name.errors|first }}</div>
                 {% endif %}
             </div>
             <div class="form-group">

@@ -4,9 +4,9 @@
 
 {% block content %}
 
-    {% if username %}
+    {% if user.is_authenticated %}
         <div class="container px-4 py-5" id="hanging-icons">
-            <h2 class="pb-2 border-bottom" style="text-align: center">Добро пожаловать, {{ username }}!</h2>
+            <h2 class="pb-2 border-bottom" style="text-align: center">Добро пожаловать, {{ user.first_name }}!</h2>
             <div class="row g-4 py-5 row-cols-1 row-cols-lg-3">
                 <div class="col d-flex align-items-start">
                     <div class="feature-icon d-inline-flex align-items-center justify-content-center text-bg-primary bg-gradient fs-2 mb-3">

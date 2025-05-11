@@ -115,6 +115,7 @@ class Tasks(models.Model):
     priority = models.CharField(max_length=10, verbose_name='Приоритет', choices=PRIORITY_CHOICES)
     customer = models.CharField(max_length=200, verbose_name='заказчик (организация)')
     assignee = models.ForeignKey(Developer, on_delete=models.CASCADE, verbose_name='исполнитель')
+    author = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Автор', default='1')
     file = models.FileField(upload_to='tasks_files/', blank=True, null=True, verbose_name='Файл')
     deadline = models.DateField(verbose_name='Дедлайн')
     status = models.CharField(max_length=15, verbose_name='Статус', choices=STATUS_CHOICES, default='under_review')
@@ -136,9 +137,10 @@ class Tickets(models.Model):
     ]
     title = models.CharField(max_length=255, verbose_name='Тема обращения')
     description = models.TextField(verbose_name='Описание обращения')
-    customer = models.CharField(max_length=200, verbose_name='заказчик (организация)')
+    customer = models.CharField(max_length=200, verbose_name='Заказчик (организация)')
     file = models.FileField(upload_to='tickets_files/', blank=True, null=True, verbose_name='Файл')
     date = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания обращения')
+    author = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Автор', default='1')
     status = models.CharField(max_length=15, verbose_name='Статус', choices=STATUS_CHOICES, default='new')
 
     class Meta:
