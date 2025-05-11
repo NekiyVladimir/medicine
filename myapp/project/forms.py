@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User, Group
 from django.contrib.auth import authenticate
-from .models import News, Document, Block, Tasks, Tickets, Employee, EmployeePosition, Organization
+from .models import News, Document, Block, Tasks, Tickets, Employee, EmployeePosition, Organization, InternalDocs
 from ckeditor.fields import RichTextField
 from ckeditor.widgets import CKEditorWidget
 
@@ -167,6 +167,21 @@ class TicketsForm(forms.ModelForm):
         labels = {
             'title': 'Тема обращения',
             'description': 'Текст обращения',
+            'file': 'Файл',
+        }
+
+
+class InternalDocsForm(forms.ModelForm):
+    description = forms.CharField(widget=CKEditorWidget(), label='Описание документа')
+
+    class Meta:
+        model = InternalDocs
+        fields = ['title', 'description', 'type', 'file']
+
+        labels = {
+            'title': 'Название документа',
+            'description': 'Описание документа',
+            'type': 'Тип документа',
             'file': 'Файл',
         }
 

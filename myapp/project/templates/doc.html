@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ docs_item.title }}{% endblock %}
+
+{% block content %}
+
+    <div class="px-4 pt-5 my-5 text-center border-bottom">
+        <h1 class="display-4 fw-bold text-body-emphasis">{{ docs_item.title }}</h1>
+        <div class="col-lg-6 mx-auto">
+            <p class="lead mb-4">{{ docs_item.description|safe }}</p>
+            {% if docs_item.file %}
+                <a href="{{ docs_item.file.url }}" target="_blank">Скачать</a>
+            {% endif %}
+            <p><small>Дата создания документа: {{docs_item.date}}</small></p>
+            <div class="d-grid gap-2 d-sm-flex justify-content-sm-center mb-5">
+                <a href="{% url 'internal_docs' %}" type="button" class="btn btn-primary btn-lg px-4 me-sm-3">
+                    Вернуться к списку внутренних документов</a>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}

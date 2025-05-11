@@ -156,6 +156,27 @@ class Document(models.Model):
     title = models.CharField(max_length=200)
 
 
+class InternalDocs(models.Model):
+    TYPE_CHOICES = [
+        ('Приказ', 'Приказ'),
+        ('Справка', 'Справка'),
+        ('Заявление', 'Заявление'),
+    ]
+    title = models.CharField(max_length=200, verbose_name='Название документа')
+    description = models.TextField(verbose_name='Описание документа')
+    author = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Автор')
+    date = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания вн. док.')
+    file = models.FileField(upload_to='docs_files/', blank=True, null=True, verbose_name='Файл')
+    type = models.CharField(max_length=15, verbose_name='Тип документа', choices=TYPE_CHOICES)
+
+    class Meta:
+        verbose_name = 'Внутренний документ'
+        verbose_name_plural = 'Внутренние документы'
+
+    def __str__(self):
+        return self.title
+
+
 class Block(models.Model):
     BLOCK_TYPE_CHOICES = [
         ('text', 'Text'),

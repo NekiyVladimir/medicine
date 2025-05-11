@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block title %}Добавление документа{% endblock %}
+
+{% block content %}
+
+    <h1>Добавить документ</h1>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-primary">Сохранить</button>
+        <a href="{% url 'internal_docs' %}" class="btn btn-success">Вернуться</a>
+    </form>
+    <script>
+        $(document).ready(function() {
+            // Инициализация Datepicker для поля даты
+            $('#id_deadline').datepicker({
+                format: 'yyyy-mm-dd', // Формат даты
+                autoclose: true
+            });
+        });
+    </script>
+{% endblock %}

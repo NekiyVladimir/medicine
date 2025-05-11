@@ -5,8 +5,8 @@ from django.views import View
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, authenticate
 from .forms import UserRegistrationForm, UserLoginForm, NewsForm, DocumentForm, BlockForm, TasksForm, TicketsForm, \
-    EmployeeRegistrationForm, OrganizationRegistrationForm, EmployeeProfileForm
-from .models import News, Document, Block, Tasks, Tickets, Employee, Organization
+    EmployeeRegistrationForm, OrganizationRegistrationForm, EmployeeProfileForm, InternalDocsForm
+from .models import News, Document, Block, Tasks, Tickets, Employee, Organization, InternalDocs
 from django.contrib import messages
 from django.forms import modelformset_factory
 
@@ -53,7 +53,7 @@ def tasks(request):
 def my_tasks(request):
     username = request.user.username if request.user.is_authenticated else ''
     tasks_list = Tasks.objects.filter(author=request.user)
-    return render(request, 'tasks.html', {'username': username, 'tasks': tasks_list})
+    return render(request, 'my_tasks.html', {'username': username, 'tasks': tasks_list})
 
 
 @login_required
@@ -72,7 +72,7 @@ def create_news(request):
             article = form.save(commit=False)
             article.author = request.user  # Устанавливаем автора
             article.save()
-            return redirect('news')  # Перенаправление на страницу списка новостей
+            return redirect('news')
     else:
         form = NewsForm()
 
@@ -88,11 +88,41 @@ def create_tasks(request):
             article = form.save(commit=False)
             article.author = request.user  # Устанавливаем автора
             article.save()
-            return redirect('tasks')  # Перенаправление на страницу списка новостей
+            return redirect('tasks')
     else:
         form = TasksForm()
 
     return render(request, 'create_task.html', {'form': form, 'username': username})
+
+
+@login_required
+def internal_docs(request):
+    username = request.user.username if request.user.is_authenticated else ''
+    docs = InternalDocs.objects.all()
+    return render(request, 'internal_docs.html', {'username': username, 'docs': docs})
+
+
+@login_required
+def docs_detail(request, doc_id):
+    username = request.user.username if request.user.is_authenticated else ''
+    docs_item = get_object_or_404(InternalDocs, id=doc_id)
+    return render(request, 'doc.html', {'username': username, 'docs_item': docs_item})
+
+
+@login_required
+def docs_add(request):
+    username = request.user.username if request.user.is_authenticated else ''
+    if request.method == 'POST':
+        form = InternalDocsForm(request.POST, request.FILES)  # Обработка формы с файлами
+        if form.is_valid():
+            article = form.save(commit=False)
+            article.author = request.user  # Устанавливаем автора
+            article.save()
+            return redirect('internal_docs')
+    else:
+        form = InternalDocsForm()
+
+    return render(request, 'docs_add.html', {'form': form, 'username': username})
 
 
 @login_required
