@@ -171,6 +171,18 @@ class TicketsForm(forms.ModelForm):
         }
 
 
+class TicketCommentForm(forms.ModelForm):
+    comment = forms.CharField(widget=CKEditorWidget(), label='Ответ к обращению')
+
+    class Meta:
+        model = Tickets
+        fields = ['comment']
+
+        labels = {
+            'comment': 'Ответ к обращению',
+        }
+
+
 class InternalDocsForm(forms.ModelForm):
     description = forms.CharField(widget=CKEditorWidget(), label='Описание документа')
 

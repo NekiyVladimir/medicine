@@ -6,11 +6,28 @@
 
     <div class="px-4 pt-5 my-5 text-center border-bottom">
         <h1 class="display-4 fw-bold text-body-emphasis">{{ tickets_item.title }}</h1>
-        <div class="col-lg-6 mx-auto">
+        <div class="mx-auto">
             <p class="lead mb-4">{{ tickets_item.description|safe }}</p>
-            <p><small>Дедлайн: {{tasks_item.deadline}}</small></p>
+            {% if tickets_item.comment %}
+                <div class="row justify-content-center g-4">
+                    <div class="col-md-4">
+                        <div class="card shadow-lg rounded-3 p-4 border-light">
+                            <div class="card-body">
+                                <p class="card-text text-muted"><strong>Ответ на обращение.</strong></p>
+                                <div class="bg-success p-3 rounded-3 text-white">
+                                    {{ tickets_item.comment|safe }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+            <p><small>Дата создания обращения: {{tickets_item.date}}</small></p>
             <div class="d-grid gap-2 d-sm-flex justify-content-sm-center mb-5">
-                <a href="{% url 'tasks' %}" type="button" class="btn btn-primary btn-lg px-4 me-sm-3">Вернуться к списку задач</a>
+                <a href="{% url 'tickets' %}" type="button" class="btn btn-primary btn-lg px-4 me-sm-3">Вернуться к списку задач</a>
+                {% if group == 'Сотрудник' %}
+                    <a href="{% url 'add_comment_ticket' tickets_item.id %}" class="btn btn-success btn-lg px-4 me-sm-3">Ответить</a>
+                {% endif %}
             </div>
         </div>
     </div>

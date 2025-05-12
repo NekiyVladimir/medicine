@@ -5,7 +5,7 @@ from django.views import View
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, authenticate
 from .forms import UserRegistrationForm, UserLoginForm, NewsForm, DocumentForm, BlockForm, TasksForm, TicketsForm, \
-    EmployeeRegistrationForm, OrganizationRegistrationForm, EmployeeProfileForm, InternalDocsForm
+    EmployeeRegistrationForm, OrganizationRegistrationForm, EmployeeProfileForm, InternalDocsForm, TicketCommentForm
 from .models import News, Document, Block, Tasks, Tickets, Employee, Organization, InternalDocs
 from django.contrib import messages
 from django.forms import modelformset_factory
@@ -128,15 +128,21 @@ def docs_add(request):
 @login_required
 def tickets(request):
     username = request.user.username if request.user.is_authenticated else ''
+    groups = request.user.groups.first()  # Получаем все группы пользователя
+    group = groups.name if groups else None
     tickets_list = Tickets.objects.all()
-    return render(request, 'tickets.html', {'username': username, 'tickets': tickets_list})
+    return render(request, 'tickets.html', {'username': username, 'tickets': tickets_list,
+                                            'group': group})
 
 
 @login_required
 def tickets_detail(request, tickets_id):
     username = request.user.username if request.user.is_authenticated else ''
-    tickets_item = get_object_or_404(Tasks, id=tickets_id)
-    return render(request, 'tickets_detail.html', {'username': username, 'tickets_item': tickets_item})
+    tickets_item = get_object_or_404(Tickets, id=tickets_id)
+    groups = request.user.groups.first()  # Получаем все группы пользователя
+    group = groups.name if groups else None
+    return render(request, 'tickets_detail.html', {'username': username,
+                                                   'tickets_item': tickets_item, 'group': group})
 
 
 @login_required
@@ -154,7 +160,7 @@ def create_tickets(request):
         if form.is_valid():
             article = form.save(commit=False)
             organization = Organization.objects.get(user=request.user)
-            article.customer = organization
+            article.customer = organization.name
             article.author = request.user
             article.save()
             return redirect('tickets')
@@ -162,6 +168,22 @@ def create_tickets(request):
         form = TicketsForm()
 
     return render(request, 'create_tickets.html', {'form': form, 'username': username})
+
+
+@login_required
+def add_comment_ticket(request, tickets_id):
+    username = request.user.username if request.user.is_authenticated else ''
+    tickets_item = get_object_or_404(Tickets, id=tickets_id)
+    if request.method == 'POST':
+        form = TicketCommentForm(request.POST, instance=tickets_item)
+        if form.is_valid():
+            form.save()
+            return redirect('tickets_detail', tickets_id=tickets_item.id)
+    else:
+        form = TicketCommentForm(instance=tickets_item)
+
+    return render(request, 'add_comment_ticket.html', {'form': form, 'tickets_item': tickets_item,
+                                                       'username': username})
 
 
 def register(request):

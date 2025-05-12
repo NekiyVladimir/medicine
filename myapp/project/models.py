@@ -142,6 +142,7 @@ class Tickets(models.Model):
     date = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания обращения')
     author = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name='Автор', default='1')
     status = models.CharField(max_length=15, verbose_name='Статус', choices=STATUS_CHOICES, default='new')
+    comment = models.TextField(verbose_name='Комментарий', blank=True, null=True)
 
     class Meta:
         verbose_name = 'Обращение'

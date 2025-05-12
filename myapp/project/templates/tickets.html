@@ -27,7 +27,7 @@
             {% endfor %}
         </tbody>
     </table>
-    {% if username %}
+    {% if group == 'Организация' %}
         <div class="mt-3">
             <a href="{% url 'create_tickets' %}" class="btn btn-success">Добавить обращение</a>
         </div>

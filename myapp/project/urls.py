@@ -28,6 +28,7 @@ urlpatterns = [
     path('my_tickets/', views.my_tickets, name='my_tickets'),
     path('tickets/<int:tickets_id>/', views.tickets_detail, name='tickets_detail'),
     path('create-tickets/', views.create_tickets, name='create_tickets'),
+    path('add-comment-ticket/<int:tickets_id>/', views.add_comment_ticket, name='add_comment_ticket'),
     path('login/', views.login_view, name='login'),
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
 ]
