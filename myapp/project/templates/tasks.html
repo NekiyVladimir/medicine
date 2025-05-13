@@ -12,15 +12,25 @@
                 <th>Приоритет</th>
                 <th>Дедлайн</th>
                 <th>Статус</th>
+                <th style="width: 250px;">Операции</th>
             </tr>
         </thead>
         <tbody>
             {% for task in tasks %}
                 <tr>
-                    <td><a href="{% url 'tasks_detail' task.id %}">{{ task.title }}</a></td>
+                    <td>{{ task.title }}</td>
                     <td>{{ task.get_priority_display }}</td>
                     <td>{{ task.deadline }}</td>
                     <td>{{ task.get_status_display }}</td>
+                    <td>
+                        <a href="{% url 'tasks_detail' task.id %}" class="btn btn-primary btn-sm">Посмотреть</a>
+                        {% if group == 'Администратор' %}
+                            <form action="{% url 'delete_task' task.id %}" method="post" style="display:inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-danger btn-sm">Удалить</button>
+                            </form>
+                        {% endif %}
+                    </td>
                 </tr>
             {% endfor %}
         </tbody>

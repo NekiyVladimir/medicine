@@ -31,4 +31,8 @@ urlpatterns = [
     path('add-comment-ticket/<int:tickets_id>/', views.add_comment_ticket, name='add_comment_ticket'),
     path('login/', views.login_view, name='login'),
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
+    path('delete_news/<int:new_id>/', views.delete_news, name='delete_news'),
+    path('delete_task/<int:task_id>/', views.delete_task, name='delete_task'),
+    path('delete_ticket/<int:ticket_id>/', views.delete_ticket, name='delete_ticket'),
+    path('delete_doc/<int:doc_id>/', views.delete_doc, name='delete_doc'),
 ]

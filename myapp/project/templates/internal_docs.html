@@ -12,15 +12,25 @@
                 <th>Автор</th>
                 <th>Дата создания</th>
                 <th>Тип</th>
+                <th style="width: 250px;">Операции</th>
             </tr>
         </thead>
         <tbody>
             {% for doc in docs %}
                 <tr>
-                    <td><a href="{% url 'docs_detail' doc.id %}">{{ doc.title }}</a></td>
+                    <td>{{ doc.title }}</td>
                     <td>{{ doc.author.first_name }}</td>
                     <td>{{ doc.date|date:"d.m.Y" }}</td>
                     <td>{{ doc.type }}</td>
+                    <td>
+                        <a href="{% url 'docs_detail' doc.id %}" class="btn btn-primary btn-sm">Посмотреть</a>
+                        {% if group == 'Администратор' %}
+                            <form action="{% url 'delete_doc' doc.id %}" method="post" style="display:inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-danger btn-sm">Удалить</button>
+                            </form>
+                        {% endif %}
+                    </td>
                 </tr>
             {% endfor %}
         </tbody>

@@ -33,7 +33,9 @@ def documents(request):
 def news(request):
     username = request.user.username if request.user.is_authenticated else ''
     news_list = News.objects.all()
-    return render(request, 'news.html', {'username': username, 'news': news_list})
+    groups = request.user.groups.first()  # Получаем все группы пользователя
+    group = groups.name if groups else None
+    return render(request, 'news.html', {'username': username, 'news': news_list, 'group': group})
 
 
 def news_detail(request, news_id):
@@ -46,7 +48,9 @@ def news_detail(request, news_id):
 def tasks(request):
     username = request.user.username if request.user.is_authenticated else ''
     tasks_list = Tasks.objects.all()
-    return render(request, 'tasks.html', {'username': username, 'tasks': tasks_list})
+    groups = request.user.groups.first()  # Получаем все группы пользователя
+    group = groups.name if groups else None
+    return render(request, 'tasks.html', {'username': username, 'tasks': tasks_list, 'group': group})
 
 
 @login_required
@@ -99,7 +103,9 @@ def create_tasks(request):
 def internal_docs(request):
     username = request.user.username if request.user.is_authenticated else ''
     docs = InternalDocs.objects.all()
-    return render(request, 'internal_docs.html', {'username': username, 'docs': docs})
+    groups = request.user.groups.first()  # Получаем все группы пользователя
+    group = groups.name if groups else None
+    return render(request, 'internal_docs.html', {'username': username, 'docs': docs, 'group': group})
 
 
 @login_required
@@ -276,3 +282,52 @@ def create_document(request):
 
     return render(request, 'create_document.html', {'document_form': document_form,
         'block_formset': block_formset, 'username': username})
+
+
+@login_required
+def delete_news(request, new_id):
+    news_item = get_object_or_404(News, id=new_id)
+
+    if request.method == 'POST':
+        news_item.delete()
+        return redirect('news')
+
+    username = request.user.username if request.user.is_authenticated else ''
+    return render(request, 'news_detail.html', {'username': username, 'news_item': news_item})
+
+
+@login_required
+def delete_task(request, task_id):
+    task_item = get_object_or_404(Tasks, id=task_id)
+
+    if request.method == 'POST':
+        task_item.delete()
+        return redirect('tasks')
+
+    username = request.user.username if request.user.is_authenticated else ''
+    return render(request, 'tasks_detail.html', {'username': username, 'task_item': task_item})
+
+
+@login_required
+def delete_ticket(request, ticket_id):
+    ticket_item = get_object_or_404(Tickets, id=ticket_id)
+
+    if request.method == 'POST':
+        ticket_item.delete()
+        return redirect('tickets')
+
+    username = request.user.username if request.user.is_authenticated else ''
+    return render(request, 'tickets_detail.html', {'username': username, 'tickets_item': ticket_item})
+
+
+@login_required
+def delete_doc(request, doc_id):
+    docs_item = get_object_or_404(InternalDocs, id=doc_id)
+
+    if request.method == 'POST':
+        docs_item.delete()
+        return redirect('internal_docs')
+
+    username = request.user.username if request.user.is_authenticated else ''
+    return render(request, 'tickets_detail.html', {'username': username, 'docs_item': docs_item})
+

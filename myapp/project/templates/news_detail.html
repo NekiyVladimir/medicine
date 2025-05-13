@@ -8,7 +8,7 @@
         <h1 class="display-4 fw-bold text-body-emphasis">{{ news_item.title }}</h1>
         <div class="col-lg-6 mx-auto">
             <p class="lead mb-4">{{ news_item.content|safe }}</p>
-            {% if news_item.image.url %}
+            {% if news_item.image %}
                 <img src="{{ news_item.image.url }}">
             {% endif %}
             <p><small>Опубликовано: {{news_item.date}}</small></p>
