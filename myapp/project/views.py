@@ -2,6 +2,8 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views import View
+import requests
+import json
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, authenticate
 from .forms import UserRegistrationForm, UserLoginForm, NewsForm, BlockForm, TasksForm, TicketsForm, \
@@ -104,6 +106,60 @@ def create_tasks(request):
             article = form.save(commit=False)
             article.author = request.user  # Устанавливаем автора
             article.save()
+            api_url = "https://edoctordocs.mantishub.io/api/rest/issues"
+            api_token = "U5O5_TBiKZ2RFqsLzsFVBTuq-Lh4rr1T"
+
+            headers = {
+                "Authorization": api_token,
+                "Content-Type": "application/json"
+            }
+
+            # Подготовка данных для MantisBT
+            payload = {
+                "summary": article.title,
+                "description": article.description,
+                "project": {
+                    "id": "1"  # Замените на ID Вашего проекта
+                },
+                "category": {
+                    "id": 2,
+                    "name": "test"
+                },
+                "priority": {
+                    "id": "30",  # Замените на нужный приоритет
+                    "name": "normal"
+                },
+                "status": {
+                    "id": "10"  # Замените на нужный статус
+                },
+                #"custom_fields": [
+                    #{
+                    #    "field": "Urgency",
+                    #    "value": article.urgency
+                    #},
+                    #{
+                    #    "field": "Customer",
+                    #    "value": article.customer
+                    #},
+                    #{
+                    #    "field": "Assignee",
+                    #    "value": article.assignee.name
+                    #},
+                    #{
+                     #   "field": "Deadline",
+                     #   "value": article.deadline.isoformat()  # Преобразование даты в строку
+                    #}
+                #]
+            }
+
+            # Выполнение POST-запроса к MantisBT
+            response = requests.post(api_url, headers=headers, data=json.dumps(payload))
+
+            if response.status_code == 201:
+                print('Задача успешно создана в MantisBT')
+            else:
+                print('Ошибка при создании задачи в MantisBT:', response.text)
+
             return redirect('tasks')
     else:
         form = TasksForm()
