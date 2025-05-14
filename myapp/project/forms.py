@@ -2,7 +2,8 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User, Group
 from django.contrib.auth import authenticate
-from .models import News, Document, Block, Tasks, Tickets, Employee, EmployeePosition, Organization, InternalDocs
+from .models import News, Document, Block, Tasks, Tickets, Employee, EmployeePosition, Organization, InternalDocs, \
+    Documents
 from ckeditor.fields import RichTextField
 from ckeditor.widgets import CKEditorWidget
 
@@ -139,7 +140,7 @@ class NewsForm(forms.ModelForm):
         labels = {
             'title': 'Заголовок',
             'content': 'Текст новости',
-            'file': 'Файл',
+            'image': 'Изображение',
         }
 
 
@@ -200,13 +201,13 @@ class InternalDocsForm(forms.ModelForm):
 
 class DocumentForm(forms.ModelForm):
     class Meta:
-        model = Document
-        fields = ['title']
+        model = Documents
+        fields = ['title']  # Поле заголовка документа
 
 
 class BlockForm(forms.ModelForm):
     class Meta:
         model = Block
-        fields = ['block_type', 'content', 'image', 'order']
+        fields = ['block_type', 'content', 'image', 'video']
 
 

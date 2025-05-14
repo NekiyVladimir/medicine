@@ -24,7 +24,7 @@
             {% endif %}
             <p><small>Дата создания обращения: {{tickets_item.date}}</small></p>
             <div class="d-grid gap-2 d-sm-flex justify-content-sm-center mb-5">
-                <a href="{% url 'tickets' %}" type="button" class="btn btn-primary btn-lg px-4 me-sm-3">Вернуться к списку задач</a>
+                <a href="{% url 'tickets' %}" type="button" class="btn btn-primary btn-lg px-4 me-sm-3">Вернуться к списку обращений</a>
                 {% if group == 'Сотрудник' %}
                     <a href="{% url 'add_comment_ticket' tickets_item.id %}" class="btn btn-success btn-lg px-4 me-sm-3">Ответить</a>
                 {% endif %}

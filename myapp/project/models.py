@@ -64,6 +64,24 @@ class Documents(models.Model):
         return self.title
 
 
+class Block(models.Model):
+    BLOCK_TYPE_CHOICES = [
+        ('Текст', 'Текст'),
+        ('Изображение', 'Изображение'),
+        ('Видео', 'Видео'),
+    ]
+
+    document = models.ForeignKey(Documents, related_name='blocks', on_delete=models.CASCADE)
+    block_type = models.CharField(max_length=15, choices=BLOCK_TYPE_CHOICES)
+    content = models.TextField(blank=True, verbose_name='Текст документа')
+    image = models.ImageField(upload_to='images/', blank=True, verbose_name='Изображение')
+    video = models.FileField(upload_to='video/', blank=True, verbose_name='Видео')
+    order = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        ordering = ['order']
+
+
 class News(models.Model):
     title = models.CharField(max_length=255, verbose_name='Заголовок')
     content = models.TextField(verbose_name='Текст новости')
@@ -153,10 +171,6 @@ class Tickets(models.Model):
         return self.title
 
 
-class Document(models.Model):
-    title = models.CharField(max_length=200)
-
-
 class InternalDocs(models.Model):
     TYPE_CHOICES = [
         ('Приказ', 'Приказ'),
@@ -178,18 +192,13 @@ class InternalDocs(models.Model):
         return self.title
 
 
-class Block(models.Model):
-    BLOCK_TYPE_CHOICES = [
-        ('text', 'Text'),
-        ('image', 'Image'),
-        ('video', 'Video'),
-    ]
-
-    document = models.ForeignKey(Document, related_name='blocks', on_delete=models.CASCADE)
-    block_type = models.CharField(max_length=10, choices=BLOCK_TYPE_CHOICES)
-    content = models.TextField(blank=True)  # Для текста или ссылки на видео
-    image = models.ImageField(upload_to='images/', blank=True)  # Для изображений
-    order = models.PositiveIntegerField(default=0)  # Для сортировки блоков
+class Document(models.Model):
+    title = models.CharField(max_length=200, verbose_name='Название документа')
 
     class Meta:
-        ordering = ['order']
+        verbose_name = 'Документ'
+        verbose_name_plural = 'Документы'
+
+    def __str__(self):
+        return self.title
+

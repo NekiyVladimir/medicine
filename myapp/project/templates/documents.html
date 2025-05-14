@@ -15,33 +15,22 @@
             </tr>
         </thead>
         <tbody>
-            <tr>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td>
-                    <button class="btn btn-primary">Просмотреть</button>
-                    <button class="btn btn-danger">Удалить</button>
-                </td>
-            </tr>
-            <tr>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td>
-                    <button class="btn btn-primary">Просмотреть</button>
-                    <button class="btn btn-danger">Удалить</button>
-                </td>
-            </tr>
-            <tr>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td>
-                    <button class="btn btn-primary">Просмотреть</button>
-                    <button class="btn btn-danger">Удалить</button>
-                </td>
-            </tr>
+            {% for document in documents %}
+                <tr>
+                    <td>{{ document.title }}</td>
+                    <td>{{ document.created_at }}</td>
+                    <td>{{ document.updated_at }}</td>
+                    <td>
+                        <a href="{% url 'document_detail' document.id %}" class="btn btn-primary btn-sm">Посмотреть</a>
+                        {% if group == 'Администратор' %}
+                            <form action="{% url 'delete_doc' doc.id %}" method="post" style="display:inline;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-danger btn-sm">Удалить</button>
+                            </form>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
         </tbody>
     </table>
     <div class="mt-3">

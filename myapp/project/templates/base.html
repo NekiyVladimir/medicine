@@ -60,7 +60,11 @@
                 {% if user.is_authenticated %}
                     <div class="d-flex">
                         <span class="navbar-text me-2"><a href="{% url 'profile' %}">Пользователь: {{ user.first_name }}</a></span>
-                        <a class="btn btn-primary" href="{% url 'logout' %}">Выйти</a>
+                        <form action="{% url 'logout' %}" method="post">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-primary">Выйти</button>
+                        </form>
+                        <!--<a class="btn btn-primary" href="{% url 'logout' %}">Выйти</a>-->
                     </div>
                 {% else %}
                     <div class="d-flex">

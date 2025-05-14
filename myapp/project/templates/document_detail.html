@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ document.title }}{% endblock %}
+
+{% block content %}
+    <h1>{{ document.title }}</h1>
+    <p>Автор: {{ document.author.username }}</p>
+    <p>Дата создания: {{ document.created_at }}</p>
+    <p>Дата обновления: {{ document.updated_at }}</p>
+    <p>Версия: {{ document.version }}</p>
+
+    <h2 style="text-align: center">Блоки документа</h2>
+    {% for block in blocks %}
+        <div  class="d-grid gap-2 d-sm-flex justify-content-sm-center mb-5">
+            <h3>{{ block.block_type }}</h3>
+            {% if block.block_type == 'Текст' %}
+                <p>{{ block.content }}</p>
+            {% elif block.block_type == 'Изображение' %}
+                <img src="{{ block.image.url }}" alt="Изображение" />
+            {% elif block.block_type == 'Видео' %}
+                {% if block.video %}
+                    <video controls>
+                        <source src="{{ block.video.url }}" type="video/mp4">
+                        Ваш браузер не поддерживает видео.
+                    </video>
+                {% endif %}
+            {% endif %}
+        </div>
+
+    {% endfor %}
+    <div class="d-grid gap-2 d-sm-flex justify-content-sm-center mb-5">
+        <a href="{% url 'documents' %}" type="button" class="btn btn-primary btn-lg px-4 me-sm-3">Вернуться к списку документов</a>
+    </div>
+
+{% endblock %}

@@ -9,6 +9,7 @@ urlpatterns = [
     path('employee_register/', views.employee_register, name='employee_register'),
     path('organization_register/', views.organization_register, name='organization_register'),
     path('documents/', views.documents, name='documents'),
+    path('document/<int:document_id>/', views.document_detail, name='document_detail'),
     path('internal-docs/', views.internal_docs, name='internal_docs'),
     path('docs_detail//<int:doc_id>/', views.docs_detail, name='docs_detail'),
     path('internal-docs/add/', views.docs_add, name='docs_add'),

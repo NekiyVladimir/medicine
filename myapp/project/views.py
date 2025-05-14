@@ -4,9 +4,10 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views import View
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, authenticate
-from .forms import UserRegistrationForm, UserLoginForm, NewsForm, DocumentForm, BlockForm, TasksForm, TicketsForm, \
-    EmployeeRegistrationForm, OrganizationRegistrationForm, EmployeeProfileForm, InternalDocsForm, TicketCommentForm
-from .models import News, Document, Block, Tasks, Tickets, Employee, Organization, InternalDocs
+from .forms import UserRegistrationForm, UserLoginForm, NewsForm, BlockForm, TasksForm, TicketsForm, \
+    EmployeeRegistrationForm, OrganizationRegistrationForm, EmployeeProfileForm, InternalDocsForm, TicketCommentForm, \
+    DocumentForm
+from .models import News, Document, Block, Tasks, Tickets, Employee, Organization, InternalDocs, Documents
 from django.contrib import messages
 from django.forms import modelformset_factory
 
@@ -27,7 +28,18 @@ def profile(request):
 @login_required
 def documents(request):
     username = request.user.username if request.user.is_authenticated else ''
-    return render(request, 'documents.html', {'username': username})
+    groups = request.user.groups.first()  # Получаем все группы пользователя
+    group = groups.name if groups else None
+    documents = Documents.objects.all()
+    return render(request, 'documents.html', {'username': username, 'group': group,
+                                              'documents': documents})
+
+
+@login_required
+def document_detail(request, document_id):
+    document = get_object_or_404(Documents, id=document_id)
+    blocks = document.blocks.all()
+    return render(request, 'document_detail.html', {'document': document, 'blocks': blocks})
 
 
 def news(request):
@@ -261,27 +273,84 @@ def login_view(request):
 
 @login_required
 def create_document(request):
-    BlockFormSet = modelformset_factory(Block, form=BlockForm, extra=4)
-    username = request.user.username if request.user.is_authenticated else ''
-
     if request.method == 'POST':
         document_form = DocumentForm(request.POST)
-        block_formset = BlockFormSet(request.POST, request.FILES, queryset=Block.objects.none())
+        if document_form.is_valid():
+            document = document_form.save(commit=False)
+            document.author = request.user  # Установите автора
+            document.updated_by = request.user  # Установите обновляющего
+            document.save()
 
-        if document_form.is_valid() and block_formset.is_valid():
-            document = document_form.save()
-            blocks = block_formset.save(commit=False)
-            for block in blocks:
-                block.document = document
+            # Обработка блоков
+            block_types = request.POST.getlist('block_type')
+            contents = request.POST.getlist('content')
+            images = request.FILES.getlist('image')
+            videos = request.FILES.getlist('video')
+
+            for i in range(len(block_types)):
+                block = Block(
+                    document=document,
+                    block_type=block_types[i],
+                    content=contents[i],
+                    image=images[i] if i < len(images) else None,
+                    video=videos[i] if i < len(videos) else None,
+                    order=i
+                )
                 block.save()
-            return redirect('documents')
 
+            return redirect('documents')  # Перенаправление на страницу со списком документов
     else:
         document_form = DocumentForm()
-        block_formset = BlockFormSet(queryset=Block.objects.none())
 
-    return render(request, 'create_document.html', {'document_form': document_form,
-        'block_formset': block_formset, 'username': username})
+    return render(request, 'create_document.html', {'document_form': document_form})
+    # if request.method == 'POST':
+    #     form = DocumentBlockForm(request.POST)
+    #     if form.is_valid():
+    #         document = form.save()  # Сохраняем новый документ
+    #
+    #         # Обработка блоков
+    #         block_types = request.POST.getlist('block_type')
+    #         contents = request.POST.getlist('content')
+    #         images = request.FILES.getlist('image')
+    #         videos = request.FILES.getlist('video')
+    #
+    #         for i in range(len(block_types)):
+    #             block = Block(
+    #                 block_type=block_types[i],
+    #                 content=contents[i],
+    #                 image=images[i] if i < len(images) else None,
+    #                 video=videos[i] if i < len(videos) else None,
+    #                 document=document
+    #             )
+    #             block.save()
+    #
+    #         return redirect('documents')
+    #
+    # form = DocumentBlockForm()
+    # return render(request, 'create_document.html', {
+    #     'form': form,
+    # })
+    # BlockFormSet = modelformset_factory(Block, form=BlockForm, extra=4)
+    # username = request.user.username if request.user.is_authenticated else ''
+    #
+    # if request.method == 'POST':
+    #     document_form = DocumentForm(request.POST)
+    #     block_formset = BlockFormSet(request.POST, request.FILES, queryset=Block.objects.none())
+    #
+    #     if document_form.is_valid() and block_formset.is_valid():
+    #         document = document_form.save()
+    #         blocks = block_formset.save(commit=False)
+    #         for block in blocks:
+    #             block.document = document
+    #             block.save()
+    #         return redirect('documents')
+    #
+    # else:
+    #     document_form = DocumentForm()
+    #     block_formset = BlockFormSet(queryset=Block.objects.none())
+    #
+    # return render(request, 'create_document.html', {'document_form': document_form,
+    #     'block_formset': block_formset, 'username': username})
 
 
 @login_required
