@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+{% block title %}Редактирование документа{% endblock %}
+
+{% block content %}
+    <script>
+        function toggleBlockFields(selectElement) {
+            const selectedType = selectElement.value;
+            const blockForm = selectElement.closest('.block-form');
+
+            // Скрыть все поля
+            blockForm.querySelectorAll('.block-field').forEach(field => {
+                field.style.display = 'none';
+            });
+
+            // Показать только соответствующее поле
+            if (selectedType) {
+                blockForm.querySelector(`.${selectedType}-field`).style.display = 'block';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.block-form select').forEach(select => {
+                toggleBlockFields(select); // Инициализация отображения полей
+                select.addEventListener('change', function() {
+                    toggleBlockFields(this);
+                });
+            });
+        });
+    </script>
+    <h1>Редактировать документ: {{ document.title }}</h1>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+
+        <h2>Блоки документа</h2>
+        {{ formset.management_form }}
+        {% for form in formset %}
+            <div class="block-form">
+                {{ form.block_type }}
+                <div class="text-field block-field">
+                    {{ form.content.label }} {{ form.content }}
+                    {% if form.content.value %}
+                        <p>Текущая версия: {{ form.content.value }}</p>
+                    {% endif %}
+                </div>
+                <div class="image-field block-field">
+                    {{ form.image.label }} {{ form.image }}
+                    {% if form.image.value %}
+                        <p>Текущая версия: <img src="{{ form.image.value.url }}" alt="Изображение"></p>
+                    {% endif %}
+                </div>
+                <div class="video-field block-field">
+                    {{ form.video.label }} {{ form.video }}
+                    {% if form.video.value %}
+                        <p>Текущая версия: <a href="{{ form.video.value }}">{{ form.video.value }}</a></p>
+                    {% endif %}
+                </div>
+                <button type="button" onclick="this.closest('.block-form').remove();">Удалить блок</button>
+            </div>
+        {% endfor %}
+
+        <button type="submit">Сохранить изменения</button>
+    </form>
+    <a href="{% url 'document_detail' document.id %}">Назад</a>
+
+{% endblock %}

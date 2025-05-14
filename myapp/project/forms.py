@@ -2,9 +2,10 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User, Group
 from django.contrib.auth import authenticate
-from .models import News, Document, Block, Tasks, Tickets, Employee, EmployeePosition, Organization, InternalDocs, \
+from .models import News, Block, Tasks, Tickets, Employee, EmployeePosition, Organization, InternalDocs, \
     Documents
 from ckeditor.fields import RichTextField
+from django.forms import inlineformset_factory
 from ckeditor.widgets import CKEditorWidget
 
 
@@ -202,12 +203,17 @@ class InternalDocsForm(forms.ModelForm):
 class DocumentForm(forms.ModelForm):
     class Meta:
         model = Documents
-        fields = ['title']  # Поле заголовка документа
+        fields = ['title']
 
 
 class BlockForm(forms.ModelForm):
+    content = forms.CharField(widget=CKEditorWidget(), label='Текст документа')
+
     class Meta:
         model = Block
         fields = ['block_type', 'content', 'image', 'video']
+
+
+BlockFormSet = inlineformset_factory(Documents, Block, form=BlockForm, extra=0, can_delete=True)
 
 

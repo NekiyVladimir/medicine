@@ -6,8 +6,8 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, authenticate
 from .forms import UserRegistrationForm, UserLoginForm, NewsForm, BlockForm, TasksForm, TicketsForm, \
     EmployeeRegistrationForm, OrganizationRegistrationForm, EmployeeProfileForm, InternalDocsForm, TicketCommentForm, \
-    DocumentForm
-from .models import News, Document, Block, Tasks, Tickets, Employee, Organization, InternalDocs, Documents
+    DocumentForm, BlockFormSet
+from .models import News, Block, Tasks, Tickets, Employee, Organization, InternalDocs, Documents, Event
 from django.contrib import messages
 from django.forms import modelformset_factory
 
@@ -303,54 +303,6 @@ def create_document(request):
         document_form = DocumentForm()
 
     return render(request, 'create_document.html', {'document_form': document_form})
-    # if request.method == 'POST':
-    #     form = DocumentBlockForm(request.POST)
-    #     if form.is_valid():
-    #         document = form.save()  # Сохраняем новый документ
-    #
-    #         # Обработка блоков
-    #         block_types = request.POST.getlist('block_type')
-    #         contents = request.POST.getlist('content')
-    #         images = request.FILES.getlist('image')
-    #         videos = request.FILES.getlist('video')
-    #
-    #         for i in range(len(block_types)):
-    #             block = Block(
-    #                 block_type=block_types[i],
-    #                 content=contents[i],
-    #                 image=images[i] if i < len(images) else None,
-    #                 video=videos[i] if i < len(videos) else None,
-    #                 document=document
-    #             )
-    #             block.save()
-    #
-    #         return redirect('documents')
-    #
-    # form = DocumentBlockForm()
-    # return render(request, 'create_document.html', {
-    #     'form': form,
-    # })
-    # BlockFormSet = modelformset_factory(Block, form=BlockForm, extra=4)
-    # username = request.user.username if request.user.is_authenticated else ''
-    #
-    # if request.method == 'POST':
-    #     document_form = DocumentForm(request.POST)
-    #     block_formset = BlockFormSet(request.POST, request.FILES, queryset=Block.objects.none())
-    #
-    #     if document_form.is_valid() and block_formset.is_valid():
-    #         document = document_form.save()
-    #         blocks = block_formset.save(commit=False)
-    #         for block in blocks:
-    #             block.document = document
-    #             block.save()
-    #         return redirect('documents')
-    #
-    # else:
-    #     document_form = DocumentForm()
-    #     block_formset = BlockFormSet(queryset=Block.objects.none())
-    #
-    # return render(request, 'create_document.html', {'document_form': document_form,
-    #     'block_formset': block_formset, 'username': username})
 
 
 @login_required
@@ -399,4 +351,45 @@ def delete_doc(request, doc_id):
 
     username = request.user.username if request.user.is_authenticated else ''
     return render(request, 'tickets_detail.html', {'username': username, 'docs_item': docs_item})
+
+
+@login_required
+def delete_document(request, document_id):
+    document = get_object_or_404(Documents, id=document_id)
+    blocks = document.blocks.all()
+
+    if request.method == 'POST':
+        document.delete()
+        return redirect('documents')
+
+    username = request.user.username if request.user.is_authenticated else ''
+    return render(request, 'tickets_detail.html', {'username': username, 'document': document,
+                                                   'blocks': blocks})
+
+
+@login_required
+def calendar(request):
+    events = Event.objects.all()
+    return render(request, 'calendar.html', {'events': events})
+
+
+def update_documents(request, document_id):
+    document = get_object_or_404(Documents, id=document_id)
+
+    if request.method == 'POST':
+        form = DocumentForm(request.POST, instance=document)
+        formset = BlockFormSet(request.POST, request.FILES, instance=document)
+
+        if form.is_valid() and formset.is_valid():
+            document.updated_by = request.user  # Установите текущего пользователя как обновившего
+            form.save()
+            formset.save()
+            return redirect('document_detail', document_id=document.id)  # Перенаправление на страницу документа
+    else:
+        form = DocumentForm(instance=document)
+        formset = BlockFormSet(instance=document)
+
+    return render(request, 'update_documents.html', {'form': form, 'formset': formset, 'document': document})
+
+
 

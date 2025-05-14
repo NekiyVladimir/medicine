@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block title %}Календарь{% endblock %}
+
+{% block content %}
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f9f9f9;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .event {
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 10px 0;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        .event h2 {
+            text-align: center;
+            margin: 0;
+            color: #007BFF;
+        }
+        .event p {
+            margin: 5px 0;
+            color: #555;
+        }
+        .event .date {
+            font-weight: bold;
+            color: #333;
+        }
+    </style>
+    <h1>Календарь событий</h1>
+    <div>
+        {% for event in events %}
+            <div class="event">
+                <h2>{{ event.title }}</h2>
+                <p class="date">Дата: {{ event.date|date:"d.m.Y" }}</p>
+                <p>{{ event.description }}</p>
+            </div>
+        {% empty %}
+            <p>Нет событий для отображения.</p>
+        {% endfor %}
+    </div>
+{% endblock %}

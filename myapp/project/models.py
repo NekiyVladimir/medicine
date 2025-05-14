@@ -192,12 +192,16 @@ class InternalDocs(models.Model):
         return self.title
 
 
-class Document(models.Model):
-    title = models.CharField(max_length=200, verbose_name='Название документа')
+class Event(models.Model):
+    title = models.CharField(max_length=255, verbose_name='Название события')
+    description = models.TextField(blank=True, verbose_name='Описание события')
+    date = models.DateTimeField(verbose_name='Дата события')
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания')
 
     class Meta:
-        verbose_name = 'Документ'
-        verbose_name_plural = 'Документы'
+        verbose_name = 'Событие'
+        verbose_name_plural = 'События'
+        ordering = ['date']
 
     def __str__(self):
         return self.title

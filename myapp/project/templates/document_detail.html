@@ -12,11 +12,12 @@
     <h2 style="text-align: center">Блоки документа</h2>
     {% for block in blocks %}
         <div  class="d-grid gap-2 d-sm-flex justify-content-sm-center mb-5">
-            <h3>{{ block.block_type }}</h3>
             {% if block.block_type == 'Текст' %}
                 <p>{{ block.content }}</p>
             {% elif block.block_type == 'Изображение' %}
-                <img src="{{ block.image.url }}" alt="Изображение" />
+                {% if block.image %}
+                    <img src="{{ block.image.url }}" alt="Изображение" />
+                {% endif %}
             {% elif block.block_type == 'Видео' %}
                 {% if block.video %}
                     <video controls>

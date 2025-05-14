@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.models import User, Group
 from .models import (Documents, News, Tasks, Developer, Tickets, EmployeePosition, Employee, Organization,
-                     InternalDocs, Block)
+                     InternalDocs, Block, Event)
 
 
 class EmployeePositionAdmin(admin.ModelAdmin):
@@ -50,6 +50,11 @@ class DeveloperAdmin(admin.ModelAdmin):
     search_fields = ('name',)
 
 
+class EventAdmin(admin.ModelAdmin):
+    list_display = ('title', 'description', 'date', 'created_at')
+    search_fields = ('title',)
+
+
 admin.site.register(Employee, EmployeeAdmin)
 admin.site.register(EmployeePosition, EmployeePositionAdmin)
 admin.site.register(Organization, OrganizationAdmin)
@@ -60,3 +65,4 @@ admin.site.register(Tickets, TicketsAdmin)
 admin.site.register(Developer, DeveloperAdmin)
 admin.site.register(InternalDocs, InternalDocsAdmin)
 admin.site.register(Block, BlockAdmin)
+admin.site.register(Event, EventAdmin)

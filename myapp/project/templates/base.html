@@ -17,6 +17,31 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
     <meta name="google-signin-client_id" content="YOUR_CLIENT_ID.apps.googleusercontent.com">
     <script src="https://apis.google.com/js/platform.js" async defer></script>
+    <script>
+        function toggleBlockFields(selectElement) {
+            const selectedType = selectElement.value;
+            const blockForm = selectElement.closest('.block-form');
+
+            // Скрыть все поля
+            blockForm.querySelectorAll('.block-field').forEach(field => {
+                field.style.display = 'none';
+            });
+
+            // Показать только соответствующее поле
+            if (selectedType) {
+                blockForm.querySelector(`.${selectedType}-field`).style.display = 'block';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.block-form select').forEach(select => {
+                toggleBlockFields(select); // Инициализация отображения полей
+                select.addEventListener('change', function() {
+                    toggleBlockFields(this);
+                });
+            });
+        });
+    </script>
     <style>
         body {
             margin: 0;
@@ -50,7 +75,7 @@
                             <a class="nav-link" href="{% url 'tickets' %}">Обращения</a>
                             <a class="nav-link" href="{% url 'news' %}">Отчеты</a>
                             <a class="nav-link" href="{% url 'internal_docs' %}">Внутренние документы</a>
-                            <a class="nav-link" href="{% url 'news' %}">Календарь</a>
+                            <a class="nav-link" href="{% url 'calendar' %}">Календарь</a>
                         {% else %}
                             <a class="nav-link active" aria-current="page" href="{% url 'index' %}">Главная</a>
                             <a class="nav-link" href="{% url 'news' %}">Новости</a>

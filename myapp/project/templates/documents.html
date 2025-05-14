@@ -11,7 +11,7 @@
                 <th>Название</th>
                 <th>Дата создания</th>
                 <th>Последнее изменение</th>
-                <th style="width: 250px;">Действия</th>
+                <th style="width: 320px;">Действия</th>
             </tr>
         </thead>
         <tbody>
@@ -22,8 +22,9 @@
                     <td>{{ document.updated_at }}</td>
                     <td>
                         <a href="{% url 'document_detail' document.id %}" class="btn btn-primary btn-sm">Посмотреть</a>
+                        <a href="{% url 'update_documents' document.id %}" class="btn btn-primary btn-sm">Редактировать</a>
                         {% if group == 'Администратор' %}
-                            <form action="{% url 'delete_doc' doc.id %}" method="post" style="display:inline;">
+                            <form action="{% url 'delete_document' document.id %}" method="post" style="display:inline;">
                                 {% csrf_token %}
                                 <button type="submit" class="btn btn-danger btn-sm">Удалить</button>
                             </form>
