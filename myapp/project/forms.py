@@ -207,13 +207,10 @@ class DocumentForm(forms.ModelForm):
 
 
 class BlockForm(forms.ModelForm):
-    content = forms.CharField(widget=CKEditorWidget(), label='Текст документа')
+    content = forms.CharField(widget=CKEditorWidget(), label='Текст документа', required=False)
 
     class Meta:
         model = Block
         fields = ['block_type', 'content', 'image', 'video']
-
-
-BlockFormSet = inlineformset_factory(Documents, Block, form=BlockForm, extra=0, can_delete=True)
 
 

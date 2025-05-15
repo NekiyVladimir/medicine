@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from decimal import Decimal
 
 
 class EmployeePosition(models.Model):
@@ -56,8 +57,8 @@ class Documents(models.Model):
         verbose_name_plural = 'Документы'
 
     def save(self, *args, **kwargs):
-        if self.pk is not None:
-            self.version += 0.1
+        if self.pk is not None:  # Проверяем, если это обновление существующей записи
+            self.version += Decimal('0.1')  # Преобразуем 0.1 в Decimal
         super().save(*args, **kwargs)
 
     def __str__(self):

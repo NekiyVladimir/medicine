@@ -8,7 +8,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login, authenticate
 from .forms import UserRegistrationForm, UserLoginForm, NewsForm, BlockForm, TasksForm, TicketsForm, \
     EmployeeRegistrationForm, OrganizationRegistrationForm, EmployeeProfileForm, InternalDocsForm, TicketCommentForm, \
-    DocumentForm, BlockFormSet
+    DocumentForm
 from .models import News, Block, Tasks, Tickets, Employee, Organization, InternalDocs, Documents, Event
 from django.contrib import messages
 from django.forms import modelformset_factory
@@ -119,7 +119,7 @@ def create_tasks(request):
                 "summary": article.title,
                 "description": article.description,
                 "project": {
-                    "id": "1"  # Замените на ID Вашего проекта
+                    "id": "1"
                 },
                 "category": {
                     "id": 2,
@@ -130,7 +130,7 @@ def create_tasks(request):
                     "name": "normal"
                 },
                 "status": {
-                    "id": "10"  # Замените на нужный статус
+                    "id": "30"  # Замените на нужный статус
                 },
                 #"custom_fields": [
                     #{
@@ -429,23 +429,79 @@ def calendar(request):
     return render(request, 'calendar.html', {'events': events})
 
 
+@login_required
 def update_documents(request, document_id):
     document = get_object_or_404(Documents, id=document_id)
 
     if request.method == 'POST':
-        form = DocumentForm(request.POST, instance=document)
-        formset = BlockFormSet(request.POST, request.FILES, instance=document)
+        document_form = DocumentForm(request.POST, instance=document)
+        if document_form.is_valid():
+            document = document_form.save(commit=False)
+            document.updated_by = request.user  # Устанавливаем обновляющего
+            document.save()
 
-        if form.is_valid() and formset.is_valid():
-            document.updated_by = request.user  # Установите текущего пользователя как обновившего
-            form.save()
-            formset.save()
-            return redirect('document_detail', document_id=document.id)  # Перенаправление на страницу документа
+            # Обработка блоков
+            block_types = request.POST.getlist('block_type')
+            contents = request.POST.getlist('content')
+            images = request.FILES.getlist('image')  # Получаем список изображений
+            print(images)
+            videos = request.FILES.getlist('video')  # Получаем список видео
+
+            existing_block_ids = [block.id for block in document.blocks.all()]
+            new_block_ids = []
+
+            for i in range(len(block_types)):
+                if i < len(existing_block_ids):
+                    # Обновляем существующий блок
+                    block = Block.objects.get(id=existing_block_ids[i])
+                    block.block_type = block_types[i]
+                    block.content = contents[i]
+
+                    # Сохраняем файлы только если тип блока соответствует
+                    if block_types[i] == "Изображение":
+                        block.image = images[i] if i < len(
+                            images) else block.image  # Сохраняем новое изображение или оставляем старое
+                    elif block_types[i] == "Видео":
+                        block.video = videos[i] if i < len(
+                            videos) else block.video  # Сохраняем новое видео или оставляем старое
+
+                    block.save()
+                    new_block_ids.append(block.id)
+                else:
+                    # Создаем новый блок
+                    block = Block(
+                        document=document,
+                        block_type=block_types[i],
+                        content=contents[i],
+                        image=images[i] if block_types[i] == "Изображение" else None,
+                        video=videos[i] if block_types[i] == "Видео" else None,
+                        order=i
+                    )
+                    block.save()
+                    new_block_ids.append(block.id)
+
+            # Удаляем блоки, которые больше не существуют в форме
+            for block in document.blocks.exclude(id__in=new_block_ids):
+                block.delete()
+
+            return redirect('documents')  # Перенаправление на страницу со списком документов
     else:
-        form = DocumentForm(instance=document)
-        formset = BlockFormSet(instance=document)
+        document_form = DocumentForm(instance=document)
 
-    return render(request, 'update_documents.html', {'form': form, 'formset': formset, 'document': document})
+    block_forms = []
+    for block in document.blocks.all():
+        block_forms.append({
+            'block_type': block.block_type,
+            'content': block.content,
+            'image': block.image,
+            'video': block.video,
+        })
+
+    return render(request, 'update_documents.html', {
+        'document_form': document_form,
+        'block_forms': block_forms,
+        'document': document,
+    })
 
 
 
