@@ -17,8 +17,10 @@ from django.forms import modelformset_factory
 
 
 def index(request):
+    groups = request.user.groups.first()  # Получаем все группы пользователя
+    group = groups.name if groups else None
     username = request.user.username if request.user.is_authenticated else ''
-    return render(request, 'index.html', {'username': username})
+    return render(request, 'index.html', {'username': username, 'group': group})
 
 
 @login_required
@@ -43,7 +45,10 @@ def documents(request):
 def document_detail(request, document_id):
     document = get_object_or_404(Documents, id=document_id)
     blocks = document.blocks.all()
-    return render(request, 'document_detail.html', {'document': document, 'blocks': blocks})
+    groups = request.user.groups.first()  # Получаем все группы пользователя
+    group = groups.name if groups else None
+    return render(request, 'document_detail.html', {'document': document, 'blocks': blocks,
+                                                    'group': group})
 
 
 def news(request):
@@ -57,7 +62,10 @@ def news(request):
 def news_detail(request, news_id):
     username = request.user.username if request.user.is_authenticated else ''
     news_item = get_object_or_404(News, id=news_id)
-    return render(request, 'news_detail.html', {'username': username, 'news_item': news_item})
+    groups = request.user.groups.first()  # Получаем все группы пользователя
+    group = groups.name if groups else None
+    return render(request, 'news_detail.html', {'username': username, 'news_item': news_item,
+                                                'group': group})
 
 
 @login_required
@@ -73,19 +81,27 @@ def tasks(request):
 def my_tasks(request):
     username = request.user.username if request.user.is_authenticated else ''
     tasks_list = Tasks.objects.filter(author=request.user)
-    return render(request, 'my_tasks.html', {'username': username, 'tasks': tasks_list})
+    groups = request.user.groups.first()  # Получаем все группы пользователя
+    group = groups.name if groups else None
+    return render(request, 'my_tasks.html', {'username': username, 'tasks': tasks_list,
+                                             'group': group})
 
 
 @login_required
 def tasks_detail(request, tasks_id):
     username = request.user.username if request.user.is_authenticated else ''
     tasks_item = get_object_or_404(Tasks, id=tasks_id)
-    return render(request, 'tasks_detail.html', {'username': username, 'tasks_item': tasks_item})
+    groups = request.user.groups.first()  # Получаем все группы пользователя
+    group = groups.name if groups else None
+    return render(request, 'tasks_detail.html', {'username': username, 'tasks_item': tasks_item,
+                                                 'group': group})
 
 
 @login_required
 def create_news(request):
     username = request.user.username if request.user.is_authenticated else ''
+    groups = request.user.groups.first()  # Получаем все группы пользователя
+    group = groups.name if groups else None
     if request.method == 'POST':
         form = NewsForm(request.POST, request.FILES)  # Обработка формы с файлами
         if form.is_valid():
@@ -96,12 +112,14 @@ def create_news(request):
     else:
         form = NewsForm()
 
-    return render(request, 'create-news.html', {'form': form, 'username': username})
+    return render(request, 'create-news.html', {'form': form, 'username': username, 'group': group})
 
 
 @login_required
 def create_tasks(request):
     username = request.user.username if request.user.is_authenticated else ''
+    groups = request.user.groups.first()  # Получаем все группы пользователя
+    group = groups.name if groups else None
     if request.method == 'POST':
         form = TasksForm(request.POST, request.FILES)  # Обработка формы с файлами
         if form.is_valid():
@@ -166,7 +184,7 @@ def create_tasks(request):
     else:
         form = TasksForm()
 
-    return render(request, 'create_task.html', {'form': form, 'username': username})
+    return render(request, 'create_task.html', {'form': form, 'username': username, 'group': group})
 
 
 @login_required
@@ -180,14 +198,18 @@ def internal_docs(request):
 
 @login_required
 def docs_detail(request, doc_id):
+    groups = request.user.groups.first()  # Получаем все группы пользователя
+    group = groups.name if groups else None
     username = request.user.username if request.user.is_authenticated else ''
     docs_item = get_object_or_404(InternalDocs, id=doc_id)
-    return render(request, 'doc.html', {'username': username, 'docs_item': docs_item})
+    return render(request, 'doc.html', {'username': username, 'docs_item': docs_item, 'group': group})
 
 
 @login_required
 def docs_add(request):
     username = request.user.username if request.user.is_authenticated else ''
+    groups = request.user.groups.first()  # Получаем все группы пользователя
+    group = groups.name if groups else None
     if request.method == 'POST':
         form = InternalDocsForm(request.POST, request.FILES)  # Обработка формы с файлами
         if form.is_valid():
@@ -198,7 +220,7 @@ def docs_add(request):
     else:
         form = InternalDocsForm()
 
-    return render(request, 'docs_add.html', {'form': form, 'username': username})
+    return render(request, 'docs_add.html', {'form': form, 'username': username, 'group': group})
 
 
 @login_required
@@ -224,13 +246,18 @@ def tickets_detail(request, tickets_id):
 @login_required
 def my_tickets(request):
     username = request.user.username if request.user.is_authenticated else ''
+    groups = request.user.groups.first()  # Получаем все группы пользователя
+    group = groups.name if groups else None
     tickets_list = Tickets.objects.filter(author=request.user)
-    return render(request, 'my_tickets.html', {'username': username, 'tasks': tickets_list})
+    return render(request, 'my_tickets.html', {'username': username, 'tasks': tickets_list,
+                                               'group': group})
 
 
 @login_required
 def create_tickets(request):
     username = request.user.username if request.user.is_authenticated else ''
+    groups = request.user.groups.first()  # Получаем все группы пользователя
+    group = groups.name if groups else None
     if request.method == 'POST':
         form = TicketsForm(request.POST, request.FILES)
         if form.is_valid():
@@ -243,12 +270,15 @@ def create_tickets(request):
     else:
         form = TicketsForm()
 
-    return render(request, 'create_tickets.html', {'form': form, 'username': username})
+    return render(request, 'create_tickets.html', {'form': form, 'username': username,
+                                                   'group': group})
 
 
 @login_required
 def add_comment_ticket(request, tickets_id):
     username = request.user.username if request.user.is_authenticated else ''
+    groups = request.user.groups.first()  # Получаем все группы пользователя
+    group = groups.name if groups else None
     tickets_item = get_object_or_404(Tickets, id=tickets_id)
     if request.method == 'POST':
         form = TicketCommentForm(request.POST, instance=tickets_item)
@@ -259,10 +289,12 @@ def add_comment_ticket(request, tickets_id):
         form = TicketCommentForm(instance=tickets_item)
 
     return render(request, 'add_comment_ticket.html', {'form': form, 'tickets_item': tickets_item,
-                                                       'username': username})
+                                                       'username': username, 'group': group})
 
 
 def register(request):
+    groups = request.user.groups.first()  # Получаем все группы пользователя
+    group = groups.name if groups else None
     if request.method == 'POST':
         form = UserRegistrationForm(request.POST)
         if form.is_valid():
@@ -273,10 +305,12 @@ def register(request):
             return redirect('index')
     else:
         form = UserRegistrationForm()
-    return render(request, 'register.html', {'form': form})
+    return render(request, 'register.html', {'form': form, 'group': group})
 
 
 def employee_register(request):
+    groups = request.user.groups.first()  # Получаем все группы пользователя
+    group = groups.name if groups else None
     if request.method == 'POST':
         form = EmployeeRegistrationForm(request.POST, request.FILES)
         if form.is_valid():
@@ -286,7 +320,7 @@ def employee_register(request):
             return redirect('index')
     else:
         form = EmployeeRegistrationForm()
-    return render(request, 'employee_register.html', {'form': form})
+    return render(request, 'employee_register.html', {'form': form, 'group': group})
 
 
 class EditProfileView(LoginRequiredMixin, View):
@@ -305,6 +339,8 @@ class EditProfileView(LoginRequiredMixin, View):
 
 
 def organization_register(request):
+    groups = request.user.groups.first()  # Получаем все группы пользователя
+    group = groups.name if groups else None
     if request.method == 'POST':
         form = OrganizationRegistrationForm(request.POST, request.FILES)
         if form.is_valid():
@@ -314,10 +350,12 @@ def organization_register(request):
             return redirect('index')
     else:
         form = OrganizationRegistrationForm()
-    return render(request, 'organization_register.html', {'form': form})
+    return render(request, 'organization_register.html', {'form': form, 'group': group})
 
 
 def login_view(request):
+    groups = request.user.groups.first()  # Получаем все группы пользователя
+    group = groups.name if groups else None
     if request.method == 'POST':
         form = UserLoginForm(request, data=request.POST)
         if form.is_valid():
@@ -326,11 +364,13 @@ def login_view(request):
             return redirect('index')
     else:
         form = UserLoginForm()
-    return render(request, 'login.html', {'form': form})
+    return render(request, 'login.html', {'form': form, 'group': group})
 
 
 @login_required
 def create_document(request):
+    groups = request.user.groups.first()  # Получаем все группы пользователя
+    group = groups.name if groups else None
     if request.method == 'POST':
         document_form = DocumentForm(request.POST)
         if document_form.is_valid():
@@ -370,11 +410,13 @@ def create_document(request):
     else:
         document_form = DocumentForm()
 
-    return render(request, 'create_document.html', {'document_form': document_form})
+    return render(request, 'create_document.html', {'document_form': document_form, 'group': group})
 
 
 @login_required
 def delete_news(request, new_id):
+    groups = request.user.groups.first()  # Получаем все группы пользователя
+    group = groups.name if groups else None
     news_item = get_object_or_404(News, id=new_id)
 
     if request.method == 'POST':
@@ -382,11 +424,14 @@ def delete_news(request, new_id):
         return redirect('news')
 
     username = request.user.username if request.user.is_authenticated else ''
-    return render(request, 'news_detail.html', {'username': username, 'news_item': news_item})
+    return render(request, 'news_detail.html', {'username': username, 'news_item': news_item,
+                                                'group': group})
 
 
 @login_required
 def delete_task(request, task_id):
+    groups = request.user.groups.first()  # Получаем все группы пользователя
+    group = groups.name if groups else None
     task_item = get_object_or_404(Tasks, id=task_id)
 
     if request.method == 'POST':
@@ -394,11 +439,14 @@ def delete_task(request, task_id):
         return redirect('tasks')
 
     username = request.user.username if request.user.is_authenticated else ''
-    return render(request, 'tasks_detail.html', {'username': username, 'task_item': task_item})
+    return render(request, 'tasks_detail.html', {'username': username, 'task_item': task_item,
+                                                 'group': group})
 
 
 @login_required
 def delete_ticket(request, ticket_id):
+    groups = request.user.groups.first()  # Получаем все группы пользователя
+    group = groups.name if groups else None
     ticket_item = get_object_or_404(Tickets, id=ticket_id)
 
     if request.method == 'POST':
@@ -406,11 +454,14 @@ def delete_ticket(request, ticket_id):
         return redirect('tickets')
 
     username = request.user.username if request.user.is_authenticated else ''
-    return render(request, 'tickets_detail.html', {'username': username, 'tickets_item': ticket_item})
+    return render(request, 'tickets_detail.html', {'username': username, 'tickets_item': ticket_item,
+                                                   'group': group})
 
 
 @login_required
 def delete_doc(request, doc_id):
+    groups = request.user.groups.first()  # Получаем все группы пользователя
+    group = groups.name if groups else None
     docs_item = get_object_or_404(InternalDocs, id=doc_id)
 
     if request.method == 'POST':
@@ -418,11 +469,14 @@ def delete_doc(request, doc_id):
         return redirect('internal_docs')
 
     username = request.user.username if request.user.is_authenticated else ''
-    return render(request, 'tickets_detail.html', {'username': username, 'docs_item': docs_item})
+    return render(request, 'tickets_detail.html', {'username': username, 'docs_item': docs_item,
+                                                   'group': group})
 
 
 @login_required
 def delete_document(request, document_id):
+    groups = request.user.groups.first()  # Получаем все группы пользователя
+    group = groups.name if groups else None
     document = get_object_or_404(Documents, id=document_id)
     blocks = document.blocks.all()
 
@@ -432,17 +486,21 @@ def delete_document(request, document_id):
 
     username = request.user.username if request.user.is_authenticated else ''
     return render(request, 'tickets_detail.html', {'username': username, 'document': document,
-                                                   'blocks': blocks})
+                                                   'blocks': blocks, 'group': group})
 
 
 @login_required
 def calendar(request):
+    groups = request.user.groups.first()  # Получаем все группы пользователя
+    group = groups.name if groups else None
     events = Event.objects.all()
-    return render(request, 'calendar.html', {'events': events})
+    return render(request, 'calendar.html', {'events': events, 'group': group})
 
 
 @login_required
 def reports(request):
+    groups = request.user.groups.first()  # Получаем все группы пользователя
+    group = groups.name if groups else None
     # Получаем группу "Сотрудник"
     employee_group = Group.objects.get(name='Сотрудник')
 
@@ -473,12 +531,15 @@ def reports(request):
         'task_counts': task_counts,
         'ticket_counts': ticket_counts,
         'doc_counts': doc_counts,
+        'group': group,
     }
     return render(request, 'reports.html', context)
 
 
 @login_required
 def update_documents(request, document_id):
+    groups = request.user.groups.first()  # Получаем все группы пользователя
+    group = groups.name if groups else None
     document = get_object_or_404(Documents, id=document_id)
 
     if request.method == 'POST':
@@ -562,6 +623,7 @@ def update_documents(request, document_id):
         'document_form': document_form,
         'block_forms': block_forms,
         'document': document,
+        'group': group,
     })
 
     # document = get_object_or_404(Documents, id=document_id)
