@@ -340,8 +340,18 @@ def create_document(request):
             # Обработка блоков
             block_types = request.POST.getlist('block_type')
             contents = request.POST.getlist('content')
-            images = request.FILES.getlist('image')
-            videos = request.FILES.getlist('video')
+            # images = request.FILES.getlist('image')
+            # videos = request.FILES.getlist('video')
+            images = []
+            videos = []
+
+            for i in range(1, len(block_types) + 1):  # Перебираем все блоки
+                image = request.FILES.get(f'image_{i}')
+                video = request.FILES.get(f'video_{i}')
+
+                # Добавляем в списки, если они существуют, или None
+                images.append(image if image else '')
+                videos.append(video if video else '')
 
             for i in range(len(block_types)):
                 block = Block(
@@ -441,48 +451,60 @@ def update_documents(request, document_id):
             document.save()
 
             # Обработка блоков
+            block_orders = request.POST.getlist('old_order')
+            new_orders = request.POST.getlist('new_order')
             block_types = request.POST.getlist('block_type')
             contents = request.POST.getlist('content')
-            images = request.FILES.getlist('image')  # Получаем список изображений
-            print(images)
-            videos = request.FILES.getlist('video')  # Получаем список видео
-
-            existing_block_ids = [block.id for block in document.blocks.all()]
-            new_block_ids = []
+            images = []
+            videos = []
 
             for i in range(len(block_types)):
-                if i < len(existing_block_ids):
-                    # Обновляем существующий блок
-                    block = Block.objects.get(id=existing_block_ids[i])
+                image = request.FILES.get(f'image_{i}')
+                video = request.FILES.get(f'video_{i}')
+
+                # Добавляем в списки, если они существуют, или None
+                images.append(image if image else '')
+                videos.append(video if video else '')
+            for block in document.blocks.all():
+                if str(block.order) in block_orders:
+                    print('OK')
+                else:
+                    block.delete()
+            for i in range(len(new_orders)):
+                if new_orders[i] == block_orders[i]:
+                    block = document.blocks.get(order=int(new_orders[i]))
                     block.block_type = block_types[i]
                     block.content = contents[i]
-
-                    # Сохраняем файлы только если тип блока соответствует
-                    if block_types[i] == "Изображение":
-                        block.image = images[i] if i < len(
-                            images) else block.image  # Сохраняем новое изображение или оставляем старое
-                    elif block_types[i] == "Видео":
-                        block.video = videos[i] if i < len(
-                            videos) else block.video  # Сохраняем новое видео или оставляем старое
-
+                    block.order = new_orders[i]
+                    if images[i]:
+                        block.image = images[i]
+                    if videos[i]:
+                        block.video = videos[i]
                     block.save()
-                    new_block_ids.append(block.id)
+                elif block_orders[i] != 'new':
+                    block_old = document.blocks.get(order=int(block_orders[i]))
+                    block_old.block_type = block_types[i]
+                    block_old.content = contents[i]
+                    block_old.order = int(new_orders[i])+1000
+                    if images[i]:
+                        block_old.image = images[i]
+                    if videos[i]:
+                        block_old.video = videos[i]
+                    block_old.save()
                 else:
-                    # Создаем новый блок
                     block = Block(
                         document=document,
                         block_type=block_types[i],
                         content=contents[i],
-                        image=images[i] if block_types[i] == "Изображение" else None,
-                        video=videos[i] if block_types[i] == "Видео" else None,
-                        order=i
+                        image=images[i],
+                        video=videos[i],
+                        order=new_orders[i],
                     )
                     block.save()
-                    new_block_ids.append(block.id)
-
-            # Удаляем блоки, которые больше не существуют в форме
-            for block in document.blocks.exclude(id__in=new_block_ids):
-                block.delete()
+            for block in document.blocks.all():
+                if block.order > 999:
+                    block.order = block.order - 1000
+                    block.save()
 
             return redirect('documents')  # Перенаправление на страницу со списком документов
     else:
@@ -495,6 +517,7 @@ def update_documents(request, document_id):
             'content': block.content,
             'image': block.image,
             'video': block.video,
+            'id': block.id  # Добавляем ID блока для обработки
         })
 
     return render(request, 'update_documents.html', {
@@ -502,6 +525,76 @@ def update_documents(request, document_id):
         'block_forms': block_forms,
         'document': document,
     })
+
+    # document = get_object_or_404(Documents, id=document_id)
+    #
+    # if request.method == 'POST':
+    #     document_form = DocumentForm(request.POST, instance=document)
+    #     if document_form.is_valid():
+    #         document = document_form.save(commit=False)
+    #         document.updated_by = request.user  # Устанавливаем обновляющего
+    #         document.save()
+    #
+    #         # Обработка блоков
+    #         block_types = request.POST.getlist('block_type')
+    #         contents = request.POST.getlist('content')
+    #         images = request.FILES.getlist('image')  # Получаем список изображений
+    #         videos = request.FILES.getlist('video')  # Получаем список видео
+    #
+    #         existing_block_ids = [block.id for block in document.blocks.all()]  # Существующие блоки
+    #         new_block_ids = []  # Список для новых блоков
+    #
+    #         for i in range(len(block_types)):
+    #             if i < len(existing_block_ids):
+    #                 # Обновляем существующий блок
+    #                 block = Block.objects.get(id=existing_block_ids[i])
+    #                 block.block_type = block_types[i]  # Обновляем тип блока
+    #                 block.content = contents[i]  # Обновляем контент
+    #
+    #                 # Сохраняем файлы только если тип блока соответствует
+    #                 if block_types[i] == "Изображение":
+    #                     if i < len(images) and images[i]:  # Проверяем, что файл загружен
+    #                         block.image = images[i]  # Обновляем изображение, если оно загружено
+    #                 elif block_types[i] == "Видео":
+    #                     if i < len(videos) and videos[i]:  # Проверяем, что файл загружен
+    #                         block.video = videos[i]  # Обновляем видео, если оно загружено
+    #
+    #                 block.save()
+    #                 new_block_ids.append(block.id)
+    #             else:
+    #                 # Создаем новый блок
+    #                 block = Block(
+    #                     document=document,
+    #                     block_type=block_types[i],
+    #                     content=contents[i],
+    #                     image=images[i] if block_types[i] == "Изображение" and i < len(images) else None,
+    #                     video=videos[i] if block_types[i] == "Видео" and i < len(videos) else None,
+    #                 )
+    #                 block.save()
+    #                 new_block_ids.append(block.id)
+    #
+    #         # Удаляем блоки, которые больше не существуют в форме
+    #         for block in document.blocks.exclude(id__in=new_block_ids):
+    #             block.delete()
+    #
+    #         return redirect('documents')  # Перенаправление на страницу со списком документов
+    # else:
+    #     document_form = DocumentForm(instance=document)
+    #
+    # block_forms = []
+    # for block in document.blocks.all():
+    #     block_forms.append({
+    #         'block_type': block.block_type,
+    #         'content': block.content,
+    #         'image': block.image,
+    #         'video': block.video,
+    #     })
+    #
+    # return render(request, 'update_documents.html', {
+    #     'document_form': document_form,
+    #     'block_forms': block_forms,
+    #     'document': document,
+    # })
 
 
 

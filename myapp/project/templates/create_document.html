@@ -44,12 +44,12 @@
         }
     </style>
 
-<h1>Создание документа</h1>
-<form method="post" enctype="multipart/form-data">
+    <h1>Создание документа</h1>
+    <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
         {{ document_form.as_p }}
+        <h2>Блоки</h2>
         <div id="block-container">
-            <h2>Блоки</h2>
             <div class="block">
                 <select name="block_type" class="block-type">
                     <option value="Текст">Текст</option>
@@ -57,8 +57,8 @@
                     <option value="Видео">Видео</option>
                 </select>
                 <textarea name="content" placeholder="Введите текст"></textarea>
-                <input type="file" name="image" accept="image/*" style="display: none;">
-                <input type="file" name="video" accept="video/*" style="display: none;">
+                <input type="file" name="image_1" accept="image/*" style="display: none;">
+                <input type="file" name="video_1" accept="video/*" style="display: none;">
                 <button type="button" class="remove-block">Удалить</button>
                 <button type="button" class="move-up">Вверх</button>
                 <button type="button" class="move-down">Вниз</button>
@@ -68,60 +68,134 @@
         <button type="submit">Создать документ</button>
     </form>
 
-    <script>
-        document.getElementById('add-block').addEventListener('click', function() {
-            const blockContainer = document.getElementById('block-container');
-            const newBlock = document.createElement('div');
-            newBlock.classList.add('block');
-            newBlock.innerHTML = `
-                <select name="block_type" class="block-type">
-                    <option value="Текст">Текст</option>
-                    <option value="Изображение">Изображение</option>
-                    <option value="Видео">Видео</option>
-                </select>
-                <textarea name="content" placeholder="Введите текст"></textarea>
-                <input type="file" name="image" accept="image/*" style="display: none;">
-                <input type="file" name="video" accept="video/*" style="display: none;">
-                <button type="button" class="remove-block">Удалить</button>
-                <button type="button" class="move-up">Вверх</button>
-                <button type="button" class="move-down">Вниз</button>
-            `;
-            blockContainer.appendChild(newBlock);
-        });
+<script>
+let blockCount = 1;
 
-        document.addEventListener('click', function(event) {
-            if (event.target.classList.contains('remove-block')) {
-                event.target.closest('.block').remove();
-            }
+document.getElementById('add-block').addEventListener('click', function() {
+    const blockContainer = document.getElementById('block-container');
+    blockCount++;
+    const newBlock = document.createElement('div');
+    newBlock.classList.add('block');
+    newBlock.innerHTML = `
+        <select name="block_type" class="block-type">
+            <option value="Текст">Текст</option>
+            <option value="Изображение">Изображение</option>
+            <option value="Видео">Видео</option>
+        </select>
+        <textarea name="content" placeholder="Введите текст"></textarea>
+        <input type="file" name="image_${blockCount}" accept="image/*" style="display: none;">
+        <input type="file" name="video_${blockCount}" accept="video/*" style="display: none;">
+        <button type="button" class="remove-block">Удалить</button>
+        <button type="button" class="move-up">Вверх</button>
+        <button type="button" class="move-down">Вниз</button>
+    `;
+    blockContainer.appendChild(newBlock);
+});
 
-            if (event.target.classList.contains('move-up')) {
-                const block = event.target.closest('.block');
-                if (block.previousElementSibling) {
-                    block.parentNode.insertBefore(block, block.previousElementSibling);
-                }
-            }
+document.addEventListener('click', function(event) {
+    if (event.target.classList.contains('remove-block')) {
+        event.target.closest('.block').remove();
+        updateBlockNumbers();
+    }
 
-            if (event.target.classList.contains('move-down')) {
-                const block = event.target.closest('.block');
-                if (block.nextElementSibling) {
-                    block.parentNode.insertBefore(block.nextElementSibling, block);
-                }
-            }
-        });
+    if (event.target.classList.contains('move-up')) {
+        const block = event.target.closest('.block');
+        if (block.previousElementSibling) {
+            block.parentNode.insertBefore(block, block.previousElementSibling);
+            updateBlockNumbers();
+        }
+    }
 
-        document.addEventListener('change', function(event) {
-            if (event.target.classList.contains('block-type')) {
-                const block = event.target.closest('.block');
-                const selectedValue = event.target.value;
-                const textarea = block.querySelector('textarea');
-                const imageInput = block.querySelector('input[type="file"][name="image"]');
-                const videoInput = block.querySelector('input[type="file"][name="video"]');
+    if (event.target.classList.contains('move-down')) {
+        const block = event.target.closest('.block');
+        if (block.nextElementSibling) {
+            block.parentNode.insertBefore(block.nextElementSibling, block);
+            updateBlockNumbers();
+        }
+    }
+});
 
-                textarea.style.display = selectedValue === 'Текст' ? 'block' : 'none';
-                imageInput.style.display = selectedValue === 'Изображение' ? 'block' : 'none';
-                videoInput.style.display = selectedValue === 'Видео' ? 'block' : 'none';
-            }
-        });
-    </script>
+document.addEventListener('change', function(event) {
+    if (event.target.classList.contains('block-type')) {
+        const block = event.target.closest('.block');
+        const selectedValue = event.target.value;
+        const textarea = block.querySelector('textarea');
+        const imageInput = block.querySelector('input[type="file"][name^="image_"]');
+        const videoInput = block.querySelector('input[type="file"][name^="video_"]');
+
+        textarea.style.display = selectedValue === 'Текст' ? 'block' : 'none';
+        imageInput.style.display = selectedValue === 'Изображение' ? 'block' : 'none';
+        videoInput.style.display = selectedValue === 'Видео' ? 'block' : 'none';
+    }
+});
+
+function updateBlockNumbers() {
+    const blocks = document.querySelectorAll('.block');
+    blocks.forEach((block, index) => {
+        const imageInput = block.querySelector('input[type="file"][name^="image_"]');
+        const videoInput = block.querySelector('input[type="file"][name^="video_"]');
+        imageInput.name = `image_${index + 1}`;
+        videoInput.name = `video_${index + 1}`;
+    });
+}
+</script>
+
+<!--    <script>-->
+<!--        let blockCount = 1;-->
+<!--        document.getElementById('add-block').addEventListener('click', function() {-->
+<!--            const blockContainer = document.getElementById('block-container');-->
+<!--            const newBlock = document.createElement('div');-->
+<!--            blockCount++;-->
+<!--            newBlock.classList.add('block');-->
+<!--            newBlock.innerHTML = `-->
+<!--                <select name="block_type" class="block-type">-->
+<!--                    <option value="Текст">Текст</option>-->
+<!--                    <option value="Изображение">Изображение</option>-->
+<!--                    <option value="Видео">Видео</option>-->
+<!--                </select>-->
+<!--                <textarea name="content" placeholder="Введите текст"></textarea>-->
+<!--                <input type="file" name="image_${blockCount}" accept="image/*" style="display: none;">-->
+<!--                <input type="file" name="video_${blockCount}" accept="video/*" style="display: none;">-->
+<!--                <button type="button" class="remove-block">Удалить</button>-->
+<!--                <button type="button" class="move-up">Вверх</button>-->
+<!--                <button type="button" class="move-down">Вниз</button>-->
+<!--            `;-->
+<!--            blockContainer.appendChild(newBlock);-->
+<!--        });-->
+
+<!--        document.addEventListener('click', function(event) {-->
+<!--            if (event.target.classList.contains('remove-block')) {-->
+<!--                event.target.closest('.block').remove();-->
+<!--            }-->
+
+<!--            if (event.target.classList.contains('move-up')) {-->
+<!--                const block = event.target.closest('.block');-->
+<!--                if (block.previousElementSibling) {-->
+<!--                    block.parentNode.insertBefore(block, block.previousElementSibling);-->
+<!--                }-->
+<!--            }-->
+
+<!--            if (event.target.classList.contains('move-down')) {-->
+<!--                const block = event.target.closest('.block');-->
+<!--                if (block.nextElementSibling) {-->
+<!--                    block.parentNode.insertBefore(block.nextElementSibling, block);-->
+<!--                }-->
+<!--            }-->
+<!--        });-->
+
+<!--        document.addEventListener('change', function(event) {-->
+<!--            if (event.target.classList.contains('block-type')) {-->
+<!--                const block = event.target.closest('.block');-->
+<!--                const selectedValue = event.target.value;-->
+<!--                const textarea = block.querySelector('textarea');-->
+<!--                const imageInput = block.querySelector('input[type="file"][name^="image_"]');-->
+<!--                const videoInput = block.querySelector('input[type="file"][name^="video_"]');-->
+
+<!--                textarea.style.display = selectedValue === 'Текст' ? 'block' : 'none';-->
+<!--                imageInput.style.display = selectedValue === 'Изображение' ? 'block' : 'none';-->
+<!--                videoInput.style.display = selectedValue === 'Видео' ? 'block' : 'none';-->
+<!--            }-->
+<!--        });-->
+<!--    </script>-->
 
 {% endblock %}
