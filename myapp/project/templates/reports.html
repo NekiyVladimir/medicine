@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+
+{% block title %}Отчеты{% endblock %}
+
+{% block content %}
+
+    <h1>Отчет работы всех сотрудников</h1>
+    <canvas id="authorChart" width="400" height="200"></canvas>
+
+    <div>
+        <h3>Данные для диаграммы:</h3>
+        <p>Имя: {{ labels }}</p>
+        <p>Документы: {{ document_counts }}</p>
+        <p>Новости: {{ new_counts }}</p>
+        <p>Задачи: {{ task_counts }}</p>
+        <p>Обращения: {{ ticket_counts }}</p>
+        <p>Внутренние документы: {{ doc_counts }}</p>
+    </div>
+
+    <script>
+    const ctx = document.getElementById('authorChart').getContext('2d');
+    const authorChart = new Chart(ctx, {
+        type: 'bar', // Тип диаграммы: 'bar', 'line', 'pie' и т.д.
+        data: {
+            labels: {{ labels|safe }},
+            datasets: [
+                {
+                    label: 'Документы',
+                    data: {{ document_counts|safe }},
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1
+                },
+                {
+                    label: 'Новости',
+                    data: {{ new_counts|safe }},
+                    backgroundColor: 'rgba(153, 102, 255, 0.2)',
+                    borderColor: 'rgba(153, 102, 255, 1)',
+                    borderWidth: 1
+                },
+                {
+                    label: 'Задачи',
+                    data: {{ task_counts|safe }},
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    borderWidth: 1
+                },
+                                {
+                    label: 'Обращения',
+                    data: {{ ticket_counts|safe }},
+                    backgroundColor: 'rgba(255,252,99,0.2)',
+                    borderColor: 'rgb(246,223,4)',
+                    borderWidth: 1
+                },
+                                {
+                    label: 'Внутренние документы',
+                    data: {{ doc_counts|safe }},
+                    backgroundColor: 'rgba(99,255,107,0.2)',
+                    borderColor: 'rgb(105,232,78)',
+                    borderWidth: 1
+                }
+            ]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        stepSize: 1
+                    }
+                }
+            }
+        }
+    });
+</script>
+
+
+{% endblock %}

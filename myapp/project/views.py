@@ -9,6 +9,8 @@ from django.contrib.auth import login, authenticate
 from .forms import UserRegistrationForm, UserLoginForm, NewsForm, BlockForm, TasksForm, TicketsForm, \
     EmployeeRegistrationForm, OrganizationRegistrationForm, EmployeeProfileForm, InternalDocsForm, TicketCommentForm, \
     DocumentForm
+from django.contrib.auth.models import User, Group
+from django.db.models import Count
 from .models import News, Block, Tasks, Tickets, Employee, Organization, InternalDocs, Documents, Event
 from django.contrib import messages
 from django.forms import modelformset_factory
@@ -437,6 +439,42 @@ def delete_document(request, document_id):
 def calendar(request):
     events = Event.objects.all()
     return render(request, 'calendar.html', {'events': events})
+
+
+@login_required
+def reports(request):
+    # Получаем группу "Сотрудник"
+    employee_group = Group.objects.get(name='Сотрудник')
+
+    # Получаем всех пользователей из группы "Сотрудник" и считаем количество связанных документов, статей и постов
+    employees = User.objects.filter(groups=employee_group).annotate(
+        document_count=Count('document', distinct=True),
+        new_count=Count('news', distinct=True),
+        task_count=Count('task', distinct=True),
+        ticket_count=Count('ticket', distinct=True),
+        doc_count=Count('docs', distinct=True),
+    )
+    for employee in employees:
+        print(employee.new_count)
+        print(employee.doc_count)
+
+    # Подготовка данных для диаграммы
+    labels = [employee.first_name for employee in employees]
+    document_counts = [employee.document_count for employee in employees]
+    new_counts = [employee.new_count for employee in employees]
+    task_counts = [employee.task_count for employee in employees]
+    ticket_counts = [employee.ticket_count for employee in employees]
+    doc_counts = [employee.doc_count for employee in employees]
+
+    context = {
+        'labels': labels,
+        'document_counts': document_counts,
+        'new_counts': new_counts,
+        'task_counts': task_counts,
+        'ticket_counts': ticket_counts,
+        'doc_counts': doc_counts,
+    }
+    return render(request, 'reports.html', context)
 
 
 @login_required
