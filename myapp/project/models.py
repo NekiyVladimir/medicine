@@ -162,6 +162,8 @@ class Tickets(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE, related_name='ticket', verbose_name='Автор', default='1')
     status = models.CharField(max_length=15, verbose_name='Статус', choices=STATUS_CHOICES, default='new')
     comment = models.TextField(verbose_name='Комментарий', blank=True, null=True)
+    employee = models.ForeignKey(User, on_delete=models.CASCADE, related_name='ticket_employee',
+                                 verbose_name='Ответ сотрудника', blank=True, null=True)
 
     class Meta:
         verbose_name = 'Обращение'

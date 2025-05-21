@@ -68,38 +68,20 @@
                 </button>
                 <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
                     <div class="navbar-nav">
+                        <a class="nav-link active" aria-current="page" href="{% url 'index' %}">Главная</a>
+                        <a class="nav-link" href="{% url 'news' %}">Новости</a>
                         {% if user.is_authenticated %}
-                            <a class="nav-link active" aria-current="page" href="{% url 'index' %}">Главная</a>
-                            {% if group == 'Организация' %}
-                                <a class="nav-link" style="text-align: center" href="{% url 'documents' %}">
-                                    Отчеты<br>(только для просмотра)</a>
-                                <a class="nav-link" style="text-align: center" href="{% url 'news' %}">
-                                    Новости<br>(только для просмотра)</a>
-                                <a class="nav-link" style="text-align: center" href="{% url 'tasks' %}">
-                                    Задачи<br>(только для просмотра)</a>
-                            {% else %}
-                                <a class="nav-link" href="{% url 'news' %}">Новости</a>
+                            {% if group == 'Сотрудник' or group == "Администратор" %}
                                 <a class="nav-link" href="{% url 'documents' %}">Документы</a>
                                 <a class="nav-link" href="{% url 'tasks' %}">Задачи</a>
+                                <a class="nav-link" href="{% url 'internal_docs' %}">Внутренние документы</a>
+                                <a class="nav-link" href="{% url 'calendar' %}">Календарь</a>
                             {% endif %}
 
                             <a class="nav-link" href="{% url 'tickets' %}">Обращения</a>
                             {% if group == 'Администратор' %}
                                 <a class="nav-link" href="{% url 'reports' %}">Отчеты</a>
                             {% endif %}
-                            {% if group == 'Организация' %}
-                                <a class="nav-link" style="text-align: center" href="{% url 'internal_docs' %}">
-                                    Внутренние документы<br>(только для просмотра)</a>
-                                <a class="nav-link" style="text-align: center" href="{% url 'calendar' %}">
-                                    Календарь<br>(только для просмотра)</a>
-                            {% else %}
-                                <a class="nav-link" href="{% url 'internal_docs' %}">Внутренние документы</a>
-                                <a class="nav-link" href="{% url 'calendar' %}">Календарь</a>
-                            {% endif %}
-
-                        {% else %}
-                            <a class="nav-link active" aria-current="page" href="{% url 'index' %}">Главная</a>
-                            <a class="nav-link" href="{% url 'news' %}">Новости</a>
                         {% endif %}
                     </div>
                 </div>

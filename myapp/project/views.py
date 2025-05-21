@@ -283,7 +283,9 @@ def add_comment_ticket(request, tickets_id):
     if request.method == 'POST':
         form = TicketCommentForm(request.POST, instance=tickets_item)
         if form.is_valid():
-            form.save()
+            ticket = form.save(commit=False)
+            ticket.employee = request.user
+            ticket.save()
             return redirect('tickets_detail', tickets_id=tickets_item.id)
     else:
         form = TicketCommentForm(instance=tickets_item)
@@ -509,7 +511,7 @@ def reports(request):
         document_count=Count('document', distinct=True),
         new_count=Count('news', distinct=True),
         task_count=Count('task', distinct=True),
-        ticket_count=Count('ticket', distinct=True),
+        ticket_count=Count('ticket_employee', distinct=True),
         doc_count=Count('docs', distinct=True),
     )
     for employee in employees:
